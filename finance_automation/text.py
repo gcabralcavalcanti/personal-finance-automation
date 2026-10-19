@@ -1,4 +1,5 @@
 """Text and number helpers shared by every step."""
+
 from __future__ import annotations
 
 import re
@@ -53,7 +54,7 @@ def money(v: float) -> str:
 
 
 def cents(v: float) -> int:
-    return int(round(v * 100))
+    return round(v * 100)
 
 
 def is_round(v: float) -> bool:

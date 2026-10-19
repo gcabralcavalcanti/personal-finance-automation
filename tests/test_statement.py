@@ -1,4 +1,5 @@
 """CSV parsing (Brazilian numbers, encodings, header detection) and the running-balance check."""
+
 from datetime import date
 
 import pytest
@@ -8,9 +9,11 @@ from finance_automation.text import format_brl, normalize, parse_brl
 
 from .conftest import statement_csv
 
-ROWS = [("01/08/2026", "Pix recebido", "ACME SERVICOS DIGITAIS LTDA", 9600.0),
-        ("02/08/2026", "Compra no débito", "SUPERMERCADO BOM PREÇO", -1234.56),
-        ("02/08/2026", "Compra no débito", "PADARIA", -12.0)]
+ROWS = [
+    ("01/08/2026", "Pix recebido", "ACME SERVICOS DIGITAIS LTDA", 9600.0),
+    ("02/08/2026", "Compra no débito", "SUPERMERCADO BOM PREÇO", -1234.56),
+    ("02/08/2026", "Compra no débito", "PADARIA", -12.0),
+]
 
 
 def test_brazilian_numbers():

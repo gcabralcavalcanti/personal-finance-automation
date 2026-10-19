@@ -1,4 +1,5 @@
 """The API wrapper and the classifier's checks, with a fake client (no network)."""
+
 import json
 from types import SimpleNamespace
 
@@ -11,8 +12,10 @@ from finance_automation.llm import LLM, BudgetExceeded, NoRecording
 from .conftest import fake_llm
 
 SCHEMA = {"type": "object", "additionalProperties": False, "required": ["x"], "properties": {"x": {"type": "number"}}}
-ITEMS = [{"description": "CAFETERIA GRAO NOBRE", "history": "COMPRA NO DEBITO", "direction": "out"},
-         {"description": "PEDRO H LIMA", "history": "PIX ENVIADO", "direction": "out"}]
+ITEMS = [
+    {"description": "CAFETERIA GRAO NOBRE", "history": "COMPRA NO DEBITO", "direction": "out"},
+    {"description": "PEDRO H LIMA", "history": "PIX ENVIADO", "direction": "out"},
+]
 
 
 def item(i, cat="Other", conf=0.9, kw="PEDRO"):
@@ -22,7 +25,7 @@ def item(i, cat="Other", conf=0.9, kw="PEDRO"):
 def test_valid_answer_is_recorded_and_reused(tmp_path):
     m = fake_llm(tmp_path, ['{"x": 1}'])
     assert m.ask("t", "sys", "p", SCHEMA) == {"x": 1}
-    assert m.ask("t", "sys", "p", SCHEMA) == {"x": 1}          # same request: no second call
+    assert m.ask("t", "sys", "p", SCHEMA) == {"x": 1}  # same request: no second call
     assert len(m._client.messages.calls) == 1 and m.cache_hits == 1
     kw = m._client.messages.calls[0]
     assert kw["model"] == "claude-haiku-5-5" and kw["thinking"] == {"type": "disabled"}
@@ -91,7 +94,7 @@ def test_bad_keyword_triggers_schema_retry_then_succeeds(tmp_path):
     m = fake_llm(tmp_path, [bad, good])
     answers, stop = classify_descriptions(m, ITEMS)
     assert stop is None and m.calls == 2
-    assert answers["CAFETERIA GRAO NOBRE"]["suggested_keyword"] == "GRAO NOBRE"   # normalized
+    assert answers["CAFETERIA GRAO NOBRE"]["suggested_keyword"] == "GRAO NOBRE"  # normalized
 
 
 def test_batches_and_cap_stop_cleanly(tmp_path):
@@ -99,7 +102,7 @@ def test_batches_and_cap_stop_cleanly(tmp_path):
     m = fake_llm(tmp_path, table={}, max_calls=2)
     answers, stop = classify_descriptions(m, items, batch_size=20)
     assert m.calls == 2 and len(answers) == 40 and "cap" in stop
-    assert m._client.messages.calls[0]["max_tokens"] >= 20 * 35   # sized for the batch
+    assert m._client.messages.calls[0]["max_tokens"] >= 20 * 35  # sized for the batch
 
 
 def test_truncated_answer_is_retried_with_a_larger_budget(tmp_path):
@@ -108,10 +111,11 @@ def test_truncated_answer_is_retried_with_a_larger_budget(tmp_path):
     real_create = msgs.create
 
     def create(**kw):
-        if not msgs.calls:                       # first call: pretend the output was cut
+        if not msgs.calls:  # first call: pretend the output was cut
             msgs.calls.append(kw)
-            return SimpleNamespace(stop_reason="max_tokens", content=[],
-                                   usage=SimpleNamespace(input_tokens=100, output_tokens=600))
+            return SimpleNamespace(
+                stop_reason="max_tokens", content=[], usage=SimpleNamespace(input_tokens=100, output_tokens=600)
+            )
         return real_create(**kw)
 
     msgs.create = create

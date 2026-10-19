@@ -9,6 +9,7 @@ rules.csv columns: keyword, category, origin, min, max, value_category, cents, s
   to value_category instead of category. cents: 'round' (x,00) or 'non-round'.
 - source: 'seed' (written by hand) or 'review' (learned from an approved LLM suggestion).
 """
+
 from __future__ import annotations
 
 import csv
@@ -79,9 +80,18 @@ def load_rules(path: Path = config.RULES) -> list[Rule]:
             kw, cat = normalize(r.get("keyword")), (r.get("category") or "").strip()
             if not kw or not cat:
                 continue
-            out.append(Rule(kw, cat, (r.get("origin") or "").strip(), parse_amount(r.get("min")),
-                            parse_amount(r.get("max")), (r.get("value_category") or "").strip(),
-                            _norm_cents(r.get("cents") or ""), (r.get("source") or "seed").strip() or "seed"))
+            out.append(
+                Rule(
+                    kw,
+                    cat,
+                    (r.get("origin") or "").strip(),
+                    parse_amount(r.get("min")),
+                    parse_amount(r.get("max")),
+                    (r.get("value_category") or "").strip(),
+                    _norm_cents(r.get("cents") or ""),
+                    (r.get("source") or "seed").strip() or "seed",
+                )
+            )
     return out
 
 
@@ -124,8 +134,7 @@ class RuleBook:
         return None
 
 
-def internal_reason(history_norm: str, description_norm: str,
-                    own_names: list[str] | None = None) -> str | None:
+def internal_reason(history_norm: str, description_norm: str, own_names: list[str] | None = None) -> str | None:
     """Movements between the holder's own pockets: not income, not expense."""
     own = config.OWN_NAMES if own_names is None else own_names
     if any(h in history_norm for h in config.INVESTMENT_HISTORY):

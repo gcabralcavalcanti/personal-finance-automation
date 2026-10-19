@@ -9,6 +9,7 @@ Format (semicolon separated, Brazilian numbers), with free header lines before t
     Data Lançamento;Histórico;Descrição;Valor;Saldo
     31/08/2026;Pix enviado;PADARIA ...;-12,50;4.512,33
 """
+
 from __future__ import annotations
 
 import re
@@ -45,16 +46,15 @@ class Transaction:
     def natural_key(self) -> str:
         """(date, history, description, amount, balance). The balance separates two equal purchases on the same day."""
         bal = "" if self.balance is None else str(cents(self.balance))
-        return "|".join([self.date.isoformat(), self.history_norm, self.description_norm,
-                         str(cents(self.amount)), bal])
+        return "|".join([self.date.isoformat(), self.history_norm, self.description_norm, str(cents(self.amount)), bal])
 
 
 @dataclass
 class Reconciliation:
     ok: bool
-    order: str                 # 'newest-first', 'oldest-first' or 'n/a'
-    breaks: list[int] = field(default_factory=list)   # row numbers (1-based, table order) where the chain breaks
-    declared_ok: bool | None = None                   # header balance equals the closing balance
+    order: str  # 'newest-first', 'oldest-first' or 'n/a'
+    breaks: list[int] = field(default_factory=list)  # row numbers (1-based, table order) where the chain breaks
+    declared_ok: bool | None = None  # header balance equals the closing balance
     detail: str = ""
 
 
@@ -125,8 +125,11 @@ def parse_text(text: str, name: str = "statement.csv", encoding: str = "utf-8") 
         if d is None or amount is None:
             continue
         balance = parse_brl(p[4]) if len(p) >= 5 and p[4].strip() else None
-        rows.append(Transaction(d, p[1].strip(), p[2].strip(), round(amount, 2),
-                                round(balance, 2) if balance is not None else None))
+        rows.append(
+            Transaction(
+                d, p[1].strip(), p[2].strip(), round(amount, 2), round(balance, 2) if balance is not None else None
+            )
+        )
     return Statement(name, rows, period, declared, encoding)
 
 
@@ -139,9 +142,9 @@ def _breaks(txs: list[Transaction], newest_first: bool) -> list[int]:
     out = []
     for i in range(len(txs) - 1):
         a, b = txs[i], txs[i + 1]
-        if newest_first:   # a is later than b: bal(a) = bal(b) + amount(a)
+        if newest_first:  # a is later than b: bal(a) = bal(b) + amount(a)
             ok = cents(a.balance) == cents(b.balance) + cents(a.amount)
-        else:              # b is later than a: bal(b) = bal(a) + amount(b)
+        else:  # b is later than a: bal(b) = bal(a) + amount(b)
             ok = cents(b.balance) == cents(a.balance) + cents(b.amount)
         if not ok:
             out.append(i + 2)
@@ -168,5 +171,10 @@ def reconcile(st: Statement) -> Reconciliation:
         parts.append(f"header balance {st.declared_balance:.2f} differs from closing balance {closing:.2f}")
     elif declared_ok:
         parts.append("header balance matches the closing balance")
-    return Reconciliation(ok=not breaks and declared_ok is not False, order=order, breaks=breaks,
-                          declared_ok=declared_ok, detail="; ".join(parts))
+    return Reconciliation(
+        ok=not breaks and declared_ok is not False,
+        order=order,
+        breaks=breaks,
+        declared_ok=declared_ok,
+        detail="; ".join(parts),
+    )

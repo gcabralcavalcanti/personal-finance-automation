@@ -7,6 +7,7 @@ Order of precedence for a row:
   4. an LLM label: confidence >= threshold -> applied ('llm'); below -> review queue ('review')
   5. nothing yet -> the description is sent to the LLM (once, however many rows share it)
 """
+
 from __future__ import annotations
 
 from collections import Counter
@@ -51,18 +52,24 @@ def answer_schema() -> dict:
             "suggested_keyword": {"type": "string"},
         },
     }
-    return {"type": "object", "additionalProperties": False, "required": ["items"],
-            "properties": {"items": {"type": "array", "items": item}}}
+    return {
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["items"],
+        "properties": {"items": {"type": "array", "items": item}},
+    }
 
 
 def batch_prompt(items: list[dict]) -> str:
     lines = [f"{i} | {it['direction']} | {it['history']} | {it['description']}" for i, it in enumerate(items)]
-    return (f"Classify these {len(items)} statement lines (index | direction | history | description):\n"
-            + "\n".join(lines))
+    return f"Classify these {len(items)} statement lines (index | direction | history | description):\n" + "\n".join(
+        lines
+    )
 
 
 def make_check(items: list[dict]):
     """Semantic checks the JSON Schema cannot express."""
+
     def check(answer: dict) -> list[str]:
         problems = []
         seen = Counter(a["index"] for a in answer["items"])
@@ -84,25 +91,35 @@ def make_check(items: list[dict]):
                 problems.append(f"index {a['index']}: confidence must be between 0 and 1")
             kw = normalize(a["suggested_keyword"])
             if len(kw) < config.MIN_KEYWORD_LEN or kw not in items[a["index"]]["description"]:
-                problems.append(f"index {a['index']}: suggested_keyword {a['suggested_keyword']!r} must be a "
-                                f"substring of {items[a['index']]['description']!r} with at least "
-                                f"{config.MIN_KEYWORD_LEN} characters")
+                problems.append(
+                    f"index {a['index']}: suggested_keyword {a['suggested_keyword']!r} must be a "
+                    f"substring of {items[a['index']]['description']!r} with at least "
+                    f"{config.MIN_KEYWORD_LEN} characters"
+                )
         return problems
+
     return check
 
 
-def classify_descriptions(llm: LLM, items: list[dict], task: str = "classify",
-                          batch_size: int = config.BATCH_SIZE) -> tuple[dict[str, dict], str | None]:
+def classify_descriptions(
+    llm: LLM, items: list[dict], task: str = "classify", batch_size: int = config.BATCH_SIZE
+) -> tuple[dict[str, dict], str | None]:
     """items: [{'description','history','direction'}] with normalized text, unique descriptions.
     Returns ({description: answer}, stop_reason). Stops cleanly at the call cap or a missing recording."""
     items = sorted(items, key=lambda it: it["description"])
     out: dict[str, dict] = {}
     schema = answer_schema()
     for start in range(0, len(items), batch_size):
-        batch = items[start:start + batch_size]
+        batch = items[start : start + batch_size]
         try:
-            answer = llm.ask(task, SYSTEM_PROMPT, batch_prompt(batch), schema, make_check(batch),
-                             max_tokens=config.max_tokens_for(len(batch)))
+            answer = llm.ask(
+                task,
+                SYSTEM_PROMPT,
+                batch_prompt(batch),
+                schema,
+                make_check(batch),
+                max_tokens=config.max_tokens_for(len(batch)),
+            )
         except (BudgetExceeded, NoRecording) as e:
             return out, str(e)
         for a in answer["items"]:
@@ -124,8 +141,9 @@ def _apply(ledger: Ledger, book: RuleBook) -> list:
             m = book.match(desc, hist, amount)
             if m:
                 rule, cat = m
-                ledger.set_classification(r["id"], cat, "learned_rule" if rule.source == "review" else "rule",
-                                          rule.keyword)
+                ledger.set_classification(
+                    r["id"], cat, "learned_rule" if rule.source == "review" else "rule", rule.keyword
+                )
                 continue
             lab = ledger.label_for(desc)
             if lab is None:
@@ -134,22 +152,28 @@ def _apply(ledger: Ledger, book: RuleBook) -> list:
             elif lab["status"] == "approved":
                 ledger.set_classification(r["id"], lab["final_category"], "human", "approved in review")
             elif lab["status"] == "auto":
-                ledger.set_classification(r["id"], lab["final_category"], "llm",
-                                          f"confidence {lab['confidence']:.2f}")
+                ledger.set_classification(r["id"], lab["final_category"], "llm", f"confidence {lab['confidence']:.2f}")
             else:
-                ledger.set_classification(r["id"], None, "review",
-                                          f"LLM suggests {lab['llm_category']} ({lab['confidence']:.2f})")
+                ledger.set_classification(
+                    r["id"], None, "review", f"LLM suggests {lab['llm_category']} ({lab['confidence']:.2f})"
+                )
     return needs
 
 
-def classify_ledger(ledger: Ledger, book: RuleBook, llm: LLM | None,
-                    threshold: float = config.CONFIDENCE_THRESHOLD) -> dict:
+def classify_ledger(
+    ledger: Ledger, book: RuleBook, llm: LLM | None, threshold: float = config.CONFIDENCE_THRESHOLD
+) -> dict:
     needs = _apply(ledger, book)
     unique: dict[str, dict] = {}
     for r in needs:  # first occurrence (date order) gives the history/direction shown to the model
-        unique.setdefault(r["description_norm"], {"description": r["description_norm"],
-                                                  "history": r["history_norm"],
-                                                  "direction": "in" if r["amount_cents"] > 0 else "out"})
+        unique.setdefault(
+            r["description_norm"],
+            {
+                "description": r["description_norm"],
+                "history": r["history_norm"],
+                "direction": "in" if r["amount_cents"] > 0 else "out",
+            },
+        )
     stop = None
     sent = 0
     if unique and llm is not None:
@@ -163,6 +187,11 @@ def classify_ledger(ledger: Ledger, book: RuleBook, llm: LLM | None,
     elif unique:
         stop = "LLM disabled"
     methods = Counter(r["method"] for r in ledger.transactions())
-    return {"rows": sum(methods.values()), "by_method": dict(sorted(methods.items())),
-            "descriptions_needing_llm": len(unique), "descriptions_classified_now": sent,
-            "still_unclassified_rows": len(needs), "stopped": stop}
+    return {
+        "rows": sum(methods.values()),
+        "by_method": dict(sorted(methods.items())),
+        "descriptions_needing_llm": len(unique),
+        "descriptions_classified_now": sent,
+        "still_unclassified_rows": len(needs),
+        "stopped": stop,
+    }

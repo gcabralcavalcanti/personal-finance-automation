@@ -11,6 +11,7 @@
 LLM mode: --demo replays recorded answers only (no API call); --live requires a key; default 'auto'
 (live when a key exists, but recorded answers are always used first). 'demo' defaults to --demo.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -18,7 +19,7 @@ import json
 import sys
 from pathlib import Path
 
-from . import config, evaluate, report, review, synthetic
+from . import config, evaluate, final_report, report, review, synthetic
 from .classifier import classify_ledger
 from .ledger import Ledger
 from .llm import LLM
@@ -46,12 +47,16 @@ def do_import(ledger: Ledger, files, llm: LLM | None, rules_path: Path) -> list[
         stats = classify_ledger(ledger, RuleBook(load_rules(rules_path)), llm)
         res["classification"] = stats
         out.append(res)
-        print(f"{res['file']}: {res['rows_in_file']} rows, {res['new_rows']} new, {res['duplicates']} duplicates "
-              f"skipped | balance check {'OK' if res['reconciled'] else 'FAILED'} ({res['reconciliation']}) | "
-              f"encoding {res['encoding']}")
-        print(f"  unique descriptions needing the LLM: {stats['descriptions_needing_llm']}, classified now: "
-              f"{stats['descriptions_classified_now']} | ledger by method: {stats['by_method']}"
-              + (f"; stopped: {stats['stopped']}" if stats["stopped"] else ""))
+        print(
+            f"{res['file']}: {res['rows_in_file']} rows, {res['new_rows']} new, {res['duplicates']} duplicates "
+            f"skipped | balance check {'OK' if res['reconciled'] else 'FAILED'} ({res['reconciliation']}) | "
+            f"encoding {res['encoding']}"
+        )
+        print(
+            f"  unique descriptions needing the LLM: {stats['descriptions_needing_llm']}, classified now: "
+            f"{stats['descriptions_classified_now']} | ledger by method: {stats['by_method']}"
+            + (f"; stopped: {stats['stopped']}" if stats["stopped"] else "")
+        )
     return out
 
 
@@ -62,8 +67,10 @@ def print_queue(ledger: Ledger) -> None:
         return
     print(f"Review queue ({len(q)}):")
     for it in q:
-        print(f"  [{it['id']}] {it['description']} | {it['rows']} row(s), {it['total']:.2f} | LLM: "
-              f"{it['llm_category']} ({it['confidence']:.2f}) - {it['reason']} | keyword: {it['suggested_keyword']}")
+        print(
+            f"  [{it['id']}] {it['description']} | {it['rows']} row(s), {it['total']:.2f} | LLM: "
+            f"{it['llm_category']} ({it['confidence']:.2f}) - {it['reason']} | keyword: {it['suggested_keyword']}"
+        )
 
 
 def run_demo(args) -> int:
@@ -79,8 +86,8 @@ def run_demo(args) -> int:
         print("2. import the three months")
         do_import(ledger, files, llm, Path(args.rules))
         print("3. import month 1 again (idempotency)")
-        do_import(ledger, files[:1], llm, Path(args.rules))
-        print("4. review: approve the suggestions with a concrete category (\"Other\" waits for a person)")
+        reimport = do_import(ledger, files[:1], llm, Path(args.rules))[0]
+        print('4. review: approve the suggestions with a concrete category ("Other" waits for a person)')
         print_queue(ledger)
         for r in review.approve_all_suggested(ledger, Path(args.rules)):
             if "reclassified" in r:
@@ -88,14 +95,18 @@ def run_demo(args) -> int:
             else:
                 print(f"   [{r['id']}] {r['description']} -> {r['category']}: {r['note']}")
         print("5. reports")
+        months = []
         for f in files:
             month = f.stem.replace("statement-", "")
             print(f"   {report.write(ledger, month).relative_to(config.ROOT).as_posix()}")
+            months.append(report.build(ledger, month))
         ledger.close()
         print("6. eval on the golden set")
         res = evaluate.run(llm)
         (config.REPORTS / "eval.md").write_text(evaluate.to_markdown(res), encoding="utf-8")
         print(evaluate.to_text(res))
+        final_report.write(config.FINAL_REPORT, months, res, reimport, config.REPORTS / "overview.png")
+        print(f"7. {config.FINAL_REPORT.name}")
     finally:
         _summary(llm)
     return 0
@@ -106,8 +117,9 @@ def main(argv=None) -> int:
         sys.stdout.reconfigure(encoding="utf-8")
     except (AttributeError, ValueError):
         pass
-    p = argparse.ArgumentParser(prog="finance_automation", description=__doc__,
-                                formatter_class=argparse.RawDescriptionHelpFormatter)
+    p = argparse.ArgumentParser(
+        prog="finance_automation", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     p.add_argument("--ledger", default=str(config.LEDGER))
     p.add_argument("--rules", default=str(config.RULES))
     sub = p.add_subparsers(dest="cmd", required=True)

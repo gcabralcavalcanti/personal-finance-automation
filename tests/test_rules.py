@@ -1,21 +1,24 @@
 """Rule matching: longest keyword first, origin filter, value/cents condition, internal movements."""
+
 import pytest
 
 from finance_automation.rules import Rule, RuleBook, internal_reason, load_rules, save_rules
 from finance_automation.text import normalize
 
-BOOK = RuleBook([
-    Rule("RANGOJA", "Restaurants & Delivery"),
-    Rule("RANGOJA*MERCADINHO", "Groceries"),
-    Rule("PAGAFACIL", "Shopping", "out"),
-    Rule("PAGAFACIL", "Income", "in"),
-    Rule("ESTORNO", "Shopping", "Pix recebido"),
-    Rule("AUTO POSTO", "Transport", cents="non-round", value_category="Groceries"),
-    Rule("LIVRARIA", "Shopping", min=100, value_category="Education"),
-    Rule("FARMACIA", "Health", max=20, value_category="Groceries"),
-    Rule("LOJA", "Shopping"),
-    Rule("LOJA ESPECIAL", "Travel", "in"),
-])
+BOOK = RuleBook(
+    [
+        Rule("RANGOJA", "Restaurants & Delivery"),
+        Rule("RANGOJA*MERCADINHO", "Groceries"),
+        Rule("PAGAFACIL", "Shopping", "out"),
+        Rule("PAGAFACIL", "Income", "in"),
+        Rule("ESTORNO", "Shopping", "Pix recebido"),
+        Rule("AUTO POSTO", "Transport", cents="non-round", value_category="Groceries"),
+        Rule("LIVRARIA", "Shopping", min=100, value_category="Education"),
+        Rule("FARMACIA", "Health", max=20, value_category="Groceries"),
+        Rule("LOJA", "Shopping"),
+        Rule("LOJA ESPECIAL", "Travel", "in"),
+    ]
+)
 
 
 def cat(desc, amount=-10.0, hist="COMPRA NO DEBITO"):
@@ -59,15 +62,18 @@ def test_no_match():
     assert cat("SOMETHING ELSE") is None
 
 
-@pytest.mark.parametrize("hist,desc,expected", [
-    ("APLICACAO", "CDB LIQUIDEZ DIARIA", "investment application/redemption"),
-    ("RESGATE", "CDB LIQUIDEZ DIARIA", "investment application/redemption"),
-    ("PAGAMENTO FATURA", "PAGAMENTO FATURA CARTAO", "credit-card bill payment"),
-    ("SAQUE", "SAQUE BANCO 24 HORAS", "cash withdrawal"),
-    ("PIX ENVIADO", "ANA EXEMPLO", "transfer between own accounts"),
-    ("PIX ENVIADO", "PEDRO H LIMA", None),
-    ("COMPRA NO DEBITO", "SUPERMERCADO", None),
-])
+@pytest.mark.parametrize(
+    "hist,desc,expected",
+    [
+        ("APLICACAO", "CDB LIQUIDEZ DIARIA", "investment application/redemption"),
+        ("RESGATE", "CDB LIQUIDEZ DIARIA", "investment application/redemption"),
+        ("PAGAMENTO FATURA", "PAGAMENTO FATURA CARTAO", "credit-card bill payment"),
+        ("SAQUE", "SAQUE BANCO 24 HORAS", "cash withdrawal"),
+        ("PIX ENVIADO", "ANA EXEMPLO", "transfer between own accounts"),
+        ("PIX ENVIADO", "PEDRO H LIMA", None),
+        ("COMPRA NO DEBITO", "SUPERMERCADO", None),
+    ],
+)
 def test_internal_movements(hist, desc, expected):
     assert internal_reason(hist, desc, ["ANA EXEMPLO"]) == expected
 
@@ -76,7 +82,10 @@ def test_rules_csv_roundtrip_and_brazilian_amounts(tmp_path):
     p = tmp_path / "r.csv"
     save_rules([Rule("LIVRARIA", "Shopping", min=100, value_category="Education")], p)
     assert load_rules(p)[0].min == 100
-    p.write_text("keyword,category,origin,min,max,value_category,cents,source\n"
-                 "posto,Transport,,\"1.000,50\",,Groceries,redondo,\n", encoding="utf-8")
+    p.write_text(
+        "keyword,category,origin,min,max,value_category,cents,source\n"
+        'posto,Transport,,"1.000,50",,Groceries,redondo,\n',
+        encoding="utf-8",
+    )
     r = load_rules(p)[0]
     assert (r.keyword, r.min, r.cents, r.source) == ("POSTO", 1000.5, "round", "seed")

@@ -1,4 +1,5 @@
 """The synthetic data is deterministic, reconciles, and the seed rules cover roughly two thirds of the rows."""
+
 from finance_automation.statement import parse_statement, reconcile
 from finance_automation.synthetic import write_all
 

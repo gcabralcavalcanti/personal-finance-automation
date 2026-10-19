@@ -1,7 +1,8 @@
 """Write the synthetic statements, the seed rules and the golden labels (deterministic, seeded).
 
-    python generate_data.py [--seed 2026]
+python generate_data.py [--seed 2026]
 """
+
 import argparse
 import json
 

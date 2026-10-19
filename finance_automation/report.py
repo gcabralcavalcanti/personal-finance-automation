@@ -1,6 +1,7 @@
 """Monthly report: totals by category, income vs. expense, top expenses, how each row was classified,
 what is still in review and the reconciliation of the imported files. Deterministic (no timestamps),
 so the versioned sample only changes when the data or the rules change."""
+
 from __future__ import annotations
 
 import json
@@ -36,25 +37,36 @@ def build(ledger: Ledger, month: str) -> dict:
         name = r["category"] or ("(in review)" if r["method"] == "review" else "(unclassified)")
         by_cat[name][0] += 1
         by_cat[name][1] += r["amount_cents"]
-    order = [c for c in config.CATEGORY_LIST if c in by_cat] + [c for c in ("(in review)", "(unclassified)")
-                                                               if c in by_cat]
+    order = [c for c in config.CATEGORY_LIST if c in by_cat] + [
+        c for c in ("(in review)", "(unclassified)") if c in by_cat
+    ]
     order = sorted(order, key=lambda c: (c != "Income", c.startswith("("), by_cat[c][1]))
     categories = [{"category": c, "rows": by_cat[c][0], "total": by_cat[c][1] / 100} for c in order]
 
     methods = defaultdict(int)
     for r in rows:
         methods[r["method"]] += 1
-    method_rows = [{"method": m, "label": METHOD_LABELS.get(m, m), "rows": methods[m],
-                    "share": methods[m] / len(rows)} for m in METHOD_ORDER if methods.get(m)]
+    method_rows = [
+        {"method": m, "label": METHOD_LABELS.get(m, m), "rows": methods[m], "share": methods[m] / len(rows)}
+        for m in METHOD_ORDER
+        if methods.get(m)
+    ]
 
     top = sorted((r for r in flows if r["amount_cents"] < 0), key=lambda r: (r["amount_cents"], r["date"]))[:10]
     review = []
     for lab in ledger.labels("review"):
         n = [r for r in rows if r["description_norm"] == lab["description_norm"]]
         if n:
-            review.append({"id": lab["id"], "description": lab["description_norm"],
-                           "llm_category": lab["llm_category"], "confidence": lab["confidence"],
-                           "rows": len(n), "total": sum(r["amount_cents"] for r in n) / 100})
+            review.append(
+                {
+                    "id": lab["id"],
+                    "description": lab["description_norm"],
+                    "llm_category": lab["llm_category"],
+                    "confidence": lab["confidence"],
+                    "rows": len(n),
+                    "total": sum(r["amount_cents"] for r in n) / 100,
+                }
+            )
     internal = defaultdict(lambda: [0, 0])
     for r in rows:
         if r["method"] == "internal":
@@ -62,11 +74,19 @@ def build(ledger: Ledger, month: str) -> dict:
             internal[r["detail"]][1] += r["amount_cents"]
 
     first, last = rows[0]["date"], rows[-1]["date"]
-    imports = [{"file": i["file"], "encoding": i["encoding"], "rows_in_file": i["rows_in_file"],
-                "new_rows": i["new_rows"], "duplicates": i["duplicates"], "reconciled": bool(i["reconciled"]),
-                "detail": i["recon_detail"]}
-               for i in ledger.imports()
-               if i["period_start"] and i["period_start"] <= last and i["period_end"] >= first]
+    imports = [
+        {
+            "file": i["file"],
+            "encoding": i["encoding"],
+            "rows_in_file": i["rows_in_file"],
+            "new_rows": i["new_rows"],
+            "duplicates": i["duplicates"],
+            "reconciled": bool(i["reconciled"]),
+            "detail": i["recon_detail"],
+        }
+        for i in ledger.imports()
+        if i["period_start"] and i["period_start"] <= last and i["period_end"] >= first
+    ]
 
     return {
         "month": month,
@@ -77,33 +97,61 @@ def build(ledger: Ledger, month: str) -> dict:
         "savings_rate": (income + expenses) / income if income else None,
         "categories": categories,
         "methods": method_rows,
-        "top_expenses": [{"date": r["date"], "description": r["description"], "amount": r["amount_cents"] / 100,
-                          "category": r["category"] or "-", "method": r["method"]} for r in top],
+        "top_expenses": [
+            {
+                "date": r["date"],
+                "description": r["description"],
+                "amount": r["amount_cents"] / 100,
+                "category": r["category"] or "-",
+                "method": r["method"],
+            }
+            for r in top
+        ],
         "in_review": review,
         "internal": [{"reason": k, "rows": v[0], "total": v[1] / 100} for k, v in sorted(internal.items())],
         "imports": imports,
         "reconciled": all(i["reconciled"] for i in imports) if imports else None,
-        "transactions": [{"date": r["date"], "history": r["history"], "description": r["description"],
-                          "amount": r["amount_cents"] / 100, "category": r["category"], "method": r["method"],
-                          "detail": r["detail"]} for r in rows],
+        "transactions": [
+            {
+                "date": r["date"],
+                "history": r["history"],
+                "description": r["description"],
+                "amount": r["amount_cents"] / 100,
+                "category": r["category"],
+                "method": r["method"],
+                "detail": r["detail"],
+            }
+            for r in rows
+        ],
     }
 
 
 def to_markdown(d: dict) -> str:
-    L = [f"# Monthly report {d['month']}", "",
-         "Synthetic data (generated by `generate_data.py`). Amounts in BRL.", "",
-         "| | |", "|---|---:|",
-         f"| Income | {money(d['income'])} |",
-         f"| Expenses | {money(d['expenses'])} |",
-         f"| Net savings | {money(d['net_savings'])} |",
-         f"| Savings rate | {d['savings_rate']:.1%} |" if d["savings_rate"] is not None else "| Savings rate | - |",
-         f"| Rows | {d['rows']} |",
-         f"| Statement reconciliation | {'OK' if d['reconciled'] else 'CHECK' if d['reconciled'] is False else '-'} |",
-         "", "## Totals by category", "", "| Category | Rows | Total |", "|---|---:|---:|"]
+    L = [
+        f"# Monthly report {d['month']}",
+        "",
+        "Synthetic data (generated by `generate_data.py`). Amounts in BRL.",
+        "",
+        "| | |",
+        "|---|---:|",
+        f"| Income | {money(d['income'])} |",
+        f"| Expenses | {money(d['expenses'])} |",
+        f"| Net savings | {money(d['net_savings'])} |",
+        f"| Savings rate | {d['savings_rate']:.1%} |" if d["savings_rate"] is not None else "| Savings rate | - |",
+        f"| Rows | {d['rows']} |",
+        f"| Statement reconciliation | {'OK' if d['reconciled'] else 'CHECK' if d['reconciled'] is False else '-'} |",
+        "",
+        "## Totals by category",
+        "",
+        "| Category | Rows | Total |",
+        "|---|---:|---:|",
+    ]
     for c in d["categories"]:
         L.append(f"| {c['category']} | {c['rows']} | {money(c['total'])} |")
-    L.append(f"| **Net (income + expenses)** | {sum(c['rows'] for c in d['categories'])} | "
-             f"**{money(sum(c['total'] for c in d['categories']))}** |")
+    L.append(
+        f"| **Net (income + expenses)** | {sum(c['rows'] for c in d['categories'])} | "
+        f"**{money(sum(c['total'] for c in d['categories']))}** |"
+    )
     L += ["", "## How each row was classified", "", "| Method | Rows | Share |", "|---|---:|---:|"]
     for m in d["methods"]:
         L.append(f"| {m['label']} | {m['rows']} | {m['share']:.0%} |")
@@ -114,8 +162,10 @@ def to_markdown(d: dict) -> str:
     if d["in_review"]:
         L += ["| Id | Description | LLM suggestion | Confidence | Rows | Total |", "|---:|---|---|---:|---:|---:|"]
         for r in d["in_review"]:
-            L.append(f"| {r['id']} | {r['description']} | {r['llm_category']} | {r['confidence']:.2f} | "
-                     f"{r['rows']} | {money(r['total'])} |")
+            L.append(
+                f"| {r['id']} | {r['description']} | {r['llm_category']} | {r['confidence']:.2f} | "
+                f"{r['rows']} | {money(r['total'])} |"
+            )
     else:
         L.append("Nothing waiting for review.")
     L += ["", "## Internal movements (excluded from income and expenses)", ""]
@@ -125,15 +175,23 @@ def to_markdown(d: dict) -> str:
             L.append(f"| {r['reason']} | {r['rows']} | {money(r['total'])} |")
     else:
         L.append("None.")
-    L += ["", "## Imports covering this month", "",
-          "| File | Encoding | Rows in file | New | Duplicates skipped | Balance check |", "|---|---|---:|---:|---:|---|"]
+    L += [
+        "",
+        "## Imports covering this month",
+        "",
+        "| File | Encoding | Rows in file | New | Duplicates skipped | Balance check |",
+        "|---|---|---:|---:|---:|---|",
+    ]
     for i in d["imports"]:
-        L.append(f"| {i['file']} | {i['encoding']} | {i['rows_in_file']} | {i['new_rows']} | {i['duplicates']} | "
-                 f"{'OK' if i['reconciled'] else 'FAILED'}: {i['detail']} |")
+        L.append(
+            f"| {i['file']} | {i['encoding']} | {i['rows_in_file']} | {i['new_rows']} | {i['duplicates']} | "
+            f"{'OK' if i['reconciled'] else 'FAILED'}: {i['detail']} |"
+        )
     L += ["", "## All rows", "", "| Date | Description | Amount | Category | Method |", "|---|---|---:|---|---|"]
     for t in d["transactions"]:
-        L.append(f"| {t['date']} | {t['description']} | {money(t['amount'])} | {t['category'] or '-'} | "
-                 f"{t['method']} |")
+        L.append(
+            f"| {t['date']} | {t['description']} | {money(t['amount'])} | {t['category'] or '-'} | {t['method']} |"
+        )
     return "\n".join(L) + "\n"
 
 

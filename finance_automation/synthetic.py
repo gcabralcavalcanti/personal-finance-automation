@@ -3,6 +3,7 @@
 Every merchant, person and amount here is invented. The statements follow the common Brazilian
 checking-account CSV layout (semicolons, '1.234,56' numbers, header lines before the table).
 """
+
 from __future__ import annotations
 
 import csv
@@ -20,12 +21,25 @@ SEED = 2026
 MONTHS = [(2026, 7), (2026, 8), (2026, 9)]
 ENCODING_BY_MONTH = {(2026, 7): "utf-8-sig", (2026, 8): "latin-1", (2026, 9): "utf-8-sig"}
 OPENING_BALANCE = 6870.35
-OWN_NAME = "ANA EXEMPLO"   # the synthetic account holder (matches config.OWN_NAMES)
+OWN_NAME = "ANA EXEMPLO"  # the synthetic account holder (matches config.OWN_NAMES)
 
-GROC, REST, TRAN, HOUS, UTIL, SUBS = "Groceries", "Restaurants & Delivery", "Transport", "Housing", "Utilities", "Subscriptions"
+GROC, REST, TRAN, HOUS, UTIL, SUBS = (
+    "Groceries",
+    "Restaurants & Delivery",
+    "Transport",
+    "Housing",
+    "Utilities",
+    "Subscriptions",
+)
 HLTH, EDUC, SHOP, TRAV, INC, FEES, OTH = "Health", "Education", "Shopping", "Travel", "Income", "Fees & Taxes", "Other"
 
-DEB, PIX_OUT, PIX_IN, BILL, AUTO = "Compra no débito", "Pix enviado", "Pix recebido", "Pagamento efetuado", "Débito automático"
+DEB, PIX_OUT, PIX_IN, BILL, AUTO = (
+    "Compra no débito",
+    "Pix enviado",
+    "Pix recebido",
+    "Pagamento efetuado",
+    "Débito automático",
+)
 
 # Seed rules: keyword, category, origin, min, max, value_category, cents
 SEED_RULES = [
@@ -47,14 +61,14 @@ SEED_RULES = [
     Rule("PADARIA", GROC),
     Rule("ATACADAO", GROC),
     Rule("RANGOJA", REST),
-    Rule("RANGOJA*MERCADINHO", GROC),                        # longer keyword wins over RANGOJA
+    Rule("RANGOJA*MERCADINHO", GROC),  # longer keyword wins over RANGOJA
     Rule("RESTAURANTE", REST),
     Rule("VAIJA", TRAN),
     Rule("AUTO POSTO", TRAN, cents="non-round", value_category=GROC),  # fuel is paid in round values
     Rule("METRO RECARGA", TRAN),
     Rule("DROGARIA", HLTH),
     Rule("LIVRARIA", SHOP, min=100.0, value_category=EDUC),  # big purchases there are course books
-    Rule("PAGAFACIL", SHOP, "out"),                           # same keyword, split by direction
+    Rule("PAGAFACIL", SHOP, "out"),  # same keyword, split by direction
     Rule("PAGAFACIL", INC, "in"),
 ]
 
@@ -65,14 +79,14 @@ class Event:
     history: str
     description: str
     amount: float
-    category: str | None      # expected category (None for internal movements)
+    category: str | None  # expected category (None for internal movements)
 
 
 def _amt(rng, lo, hi, round_cents=False):
     v = round(rng.uniform(lo, hi), 2)
     if round_cents:
         return float(round(v))
-    if int(round(v * 100)) % 100 == 0:
+    if round(v * 100) % 100 == 0:
         v += 0.37
     return round(v, 2)
 
@@ -84,7 +98,7 @@ def _days(rng, n, last):
 def month_events(rng: random.Random, year: int, month: int, idx: int) -> list[Event]:
     last = monthrange(year, month)[1]
     ev: list[Event] = []
-    add = lambda d, h, desc, a, c: ev.append(Event(min(d, last), h, desc, a, c))  # noqa: E731
+    add = lambda d, h, desc, a, c: ev.append(Event(min(d, last), h, desc, a, c))
 
     # fixed monthly items (rules)
     add(5, PIX_IN, "ACME SERVICOS DIGITAIS LTDA", 9600.00, INC)
@@ -154,20 +168,38 @@ def month_events(rng: random.Random, year: int, month: int, idx: int) -> list[Ev
 
     # not covered by the rules: one-offs (some are deliberately ambiguous)
     one_offs = {
-        0: [(DEB, "POUSADA MAR AZUL", 380, 620, TRAV), (DEB, "VOEBEM LINHAS AEREAS", 640, 980, TRAV),
-            (DEB, "LABORATORIO ANALISES VIDA", 60, 180, HLTH), (DEB, "CALCADOS PASSO FIRME", 150, 320, SHOP),
-            (DEB, "CHURRASCARIA BRASA VIVA", 90, 210, REST), (PIX_OUT, "CHAVEIRO SEGURO 24H", 80, 160, HOUS),
-            (BILL, "GUIA IPVA 2026 COTA 3", 280, 420, FEES), (PIX_OUT, "PEDRO H LIMA", 50, 150, OTH)],
-        1: [(PIX_OUT, "CLINICA ODONTO SORRISO", 200, 450, HLTH), (DEB, "MAGAZINE ELETRO LAR", 300, 900, SHOP),
-            (DEB, "CURSO ONLINE APRENDA MAIS", 97, 197, EDUC), (DEB, "PEDAGIO RODOVIA DAS FLORES", 8, 22, TRAN),
-            (DEB, "MATERIAL DE CONSTRUCAO TIJOLAO", 120, 380, HOUS), (BILL, "CARTORIO 2 OFICIO DE NOTAS", 40, 120, FEES),
-            (PIX_IN, "MARCOS A ROCHA", 300, 600, INC), (PIX_OUT, "INSTITUTO ESPERANCA DOACAO", 30, 100, OTH),
-            (DEB, "PAG*GAMEPLAY STORE", 25, 120, SHOP)],
-        2: [(DEB, "OTICA VISAO CLARA", 250, 600, HLTH), (DEB, "EXPRESSO SUL RODOVIARIA", 90, 210, TRAV),
-            (DEB, "FLORICULTURA JARDIM SECRETO", 60, 140, SHOP), (DEB, "BORRACHARIA DO ZE", 30, 90, TRAN),
-            ("Juros", "JUROS CHEQUE ESPECIAL", 5, 30, FEES), (PIX_IN, "CARLA M SOUZA", 40, 180, INC),
-            (DEB, "PAPELARIA MATERIAL ESCOLAR", 35, 120, EDUC), (PIX_OUT, "JOSE ELETRICISTA REPAROS", 120, 300, HOUS),
-            (DEB, "VIDEOAULAS PREMIUM MENSAL", 29, 59, EDUC)],
+        0: [
+            (DEB, "POUSADA MAR AZUL", 380, 620, TRAV),
+            (DEB, "VOEBEM LINHAS AEREAS", 640, 980, TRAV),
+            (DEB, "LABORATORIO ANALISES VIDA", 60, 180, HLTH),
+            (DEB, "CALCADOS PASSO FIRME", 150, 320, SHOP),
+            (DEB, "CHURRASCARIA BRASA VIVA", 90, 210, REST),
+            (PIX_OUT, "CHAVEIRO SEGURO 24H", 80, 160, HOUS),
+            (BILL, "GUIA IPVA 2026 COTA 3", 280, 420, FEES),
+            (PIX_OUT, "PEDRO H LIMA", 50, 150, OTH),
+        ],
+        1: [
+            (PIX_OUT, "CLINICA ODONTO SORRISO", 200, 450, HLTH),
+            (DEB, "MAGAZINE ELETRO LAR", 300, 900, SHOP),
+            (DEB, "CURSO ONLINE APRENDA MAIS", 97, 197, EDUC),
+            (DEB, "PEDAGIO RODOVIA DAS FLORES", 8, 22, TRAN),
+            (DEB, "MATERIAL DE CONSTRUCAO TIJOLAO", 120, 380, HOUS),
+            (BILL, "CARTORIO 2 OFICIO DE NOTAS", 40, 120, FEES),
+            (PIX_IN, "MARCOS A ROCHA", 300, 600, INC),
+            (PIX_OUT, "INSTITUTO ESPERANCA DOACAO", 30, 100, OTH),
+            (DEB, "PAG*GAMEPLAY STORE", 25, 120, SHOP),
+        ],
+        2: [
+            (DEB, "OTICA VISAO CLARA", 250, 600, HLTH),
+            (DEB, "EXPRESSO SUL RODOVIARIA", 90, 210, TRAV),
+            (DEB, "FLORICULTURA JARDIM SECRETO", 60, 140, SHOP),
+            (DEB, "BORRACHARIA DO ZE", 30, 90, TRAN),
+            ("Juros", "JUROS CHEQUE ESPECIAL", 5, 30, FEES),
+            (PIX_IN, "CARLA M SOUZA", 40, 180, INC),
+            (DEB, "PAPELARIA MATERIAL ESCOLAR", 35, 120, EDUC),
+            (PIX_OUT, "JOSE ELETRICISTA REPAROS", 120, 300, HOUS),
+            (DEB, "VIDEOAULAS PREMIUM MENSAL", 29, 59, EDUC),
+        ],
     }
     for hist, desc, lo, hi, cat in one_offs[idx]:
         a = _amt(rng, lo, hi)
@@ -183,7 +215,7 @@ def build(seed: int = SEED):
     for idx, (y, m) in enumerate(MONTHS):
         evs = month_events(rng, y, m, idx)
         rng.shuffle(evs)
-        evs.sort(key=lambda e: e.day)          # stable: same-day order stays shuffled
+        evs.sort(key=lambda e: e.day)  # stable: same-day order stays shuffled
         rows = []
         for e in evs:
             balance = round(balance + e.amount, 2)
@@ -195,12 +227,18 @@ def build(seed: int = SEED):
 def statement_text(y: int, m: int, rows) -> str:
     last = monthrange(y, m)[1]
     closing = rows[-1][1]
-    lines = ["Extrato Conta Corrente", "Conta ;0001234-5",
-             f"Período ;01/{m:02d}/{y} a {last:02d}/{m:02d}/{y}", f"Saldo ;{format_brl(closing)}", "",
-             "Data Lançamento;Histórico;Descrição;Valor;Saldo"]
-    for e, bal in reversed(rows):              # banks list the newest row first
-        lines.append(f"{date(y, m, e.day):%d/%m/%Y};{e.history};{e.description};{format_brl(e.amount)};"
-                     f"{format_brl(bal)}")
+    lines = [
+        "Extrato Conta Corrente",
+        "Conta ;0001234-5",
+        f"Período ;01/{m:02d}/{y} a {last:02d}/{m:02d}/{y}",
+        f"Saldo ;{format_brl(closing)}",
+        "",
+        "Data Lançamento;Histórico;Descrição;Valor;Saldo",
+    ]
+    for e, bal in reversed(rows):  # banks list the newest row first
+        lines.append(
+            f"{date(y, m, e.day):%d/%m/%Y};{e.history};{e.description};{format_brl(e.amount)};{format_brl(bal)}"
+        )
     return "\n".join(lines) + "\n"
 
 
@@ -229,7 +267,7 @@ def write_all(root: Path = config.ROOT, seed: int = SEED) -> dict:
             m = book.match(d, h, e.amount)
             if m:
                 covered += 1
-                assert m[1] == e.category, (d, m[1], e.category)   # the seed rules are right by construction
+                assert m[1] == e.category, (d, m[1], e.category)  # the seed rules are right by construction
                 continue
             golden.setdefault(d, (h, "in" if e.amount > 0 else "out", e.category))
     gdir = root / "golden"
@@ -239,6 +277,13 @@ def write_all(root: Path = config.ROOT, seed: int = SEED) -> dict:
         w.writerow(["description", "history", "direction", "expected_category"])
         for d in sorted(golden):
             w.writerow([d, *golden[d]])
-    return {"statements": [p.name for p in files], "rows": total, "rows_per_month": [len(r) for _, _, r in data],
-            "covered_by_rules": covered, "internal": internal, "left_for_llm": total - covered - internal,
-            "rule_coverage": round(covered / total, 3), "golden_descriptions": len(golden)}
+    return {
+        "statements": [p.name for p in files],
+        "rows": total,
+        "rows_per_month": [len(r) for _, _, r in data],
+        "covered_by_rules": covered,
+        "internal": internal,
+        "left_for_llm": total - covered - internal,
+        "rule_coverage": round(covered / total, 3),
+        "golden_descriptions": len(golden),
+    }

@@ -1,4 +1,5 @@
 """Dedup by natural key: importing the same file twice, or overlapping periods, never duplicates."""
+
 from finance_automation.statement import parse_text
 
 from .conftest import statement_csv

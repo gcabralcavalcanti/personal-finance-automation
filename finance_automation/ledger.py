@@ -1,9 +1,10 @@
 """Local SQLite ledger. Import is append-with-dedup on the natural key, so it is idempotent:
 importing the same file twice, or two statements with overlapping periods, never duplicates a row."""
+
 from __future__ import annotations
 
 import sqlite3
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from . import config
@@ -60,9 +61,18 @@ class Ledger:
                 cur = self.db.execute(
                     "INSERT OR IGNORE INTO transactions(nkey,date,history,description,amount_cents,balance_cents,"
                     "history_norm,description_norm,source_file) VALUES(?,?,?,?,?,?,?,?,?)",
-                    (t.natural_key(), t.date.isoformat(), t.history, t.description, cents(t.amount),
-                     None if t.balance is None else cents(t.balance), t.history_norm, t.description_norm,
-                     st.name))
+                    (
+                        t.natural_key(),
+                        t.date.isoformat(),
+                        t.history,
+                        t.description,
+                        cents(t.amount),
+                        None if t.balance is None else cents(t.balance),
+                        t.history_norm,
+                        t.description_norm,
+                        st.name,
+                    ),
+                )
                 if cur.rowcount == 1:
                     new += 1
                 else:
@@ -70,22 +80,41 @@ class Ledger:
             self.db.execute(
                 "INSERT INTO imports(file,imported_at,period_start,period_end,encoding,rows_in_file,new_rows,"
                 "duplicates,reconciled,recon_detail) VALUES(?,?,?,?,?,?,?,?,?,?)",
-                (st.name, datetime.now(timezone.utc).isoformat(timespec="seconds"),
-                 st.period[0].isoformat() if st.period else None, st.period[1].isoformat() if st.period else None,
-                 st.encoding, len(st.transactions), new, dup, int(rec.ok), rec.detail))
-        return {"file": st.name, "rows_in_file": len(st.transactions), "new_rows": new, "duplicates": dup,
-                "reconciled": rec.ok, "reconciliation": rec.detail, "encoding": st.encoding}
+                (
+                    st.name,
+                    datetime.now(UTC).isoformat(timespec="seconds"),
+                    st.period[0].isoformat() if st.period else None,
+                    st.period[1].isoformat() if st.period else None,
+                    st.encoding,
+                    len(st.transactions),
+                    new,
+                    dup,
+                    int(rec.ok),
+                    rec.detail,
+                ),
+            )
+        return {
+            "file": st.name,
+            "rows_in_file": len(st.transactions),
+            "new_rows": new,
+            "duplicates": dup,
+            "reconciled": rec.ok,
+            "reconciliation": rec.detail,
+            "encoding": st.encoding,
+        }
 
     # ------------------------------------------------------------------ queries
     def transactions(self, month: str | None = None) -> list[sqlite3.Row]:
         if month:
-            return self.db.execute("SELECT * FROM transactions WHERE substr(date,1,7)=? ORDER BY date, id",
-                                   (month,)).fetchall()
+            return self.db.execute(
+                "SELECT * FROM transactions WHERE substr(date,1,7)=? ORDER BY date, id", (month,)
+            ).fetchall()
         return self.db.execute("SELECT * FROM transactions ORDER BY date, id").fetchall()
 
     def set_classification(self, tx_id: int, category: str | None, method: str, detail: str = ""):
-        self.db.execute("UPDATE transactions SET category=?, method=?, detail=? WHERE id=?",
-                        (category, method, detail, tx_id))
+        self.db.execute(
+            "UPDATE transactions SET category=?, method=?, detail=? WHERE id=?", (category, method, detail, tx_id)
+        )
 
     def labels(self, status: str | None = None) -> list[sqlite3.Row]:
         if status:
@@ -103,20 +132,32 @@ class Ledger:
             self.db.execute(
                 "INSERT OR REPLACE INTO labels(description_norm,history_norm,direction,llm_category,confidence,"
                 "reason,suggested_keyword,status,final_category) VALUES(?,?,?,?,?,?,?,?,?)",
-                (description_norm, history_norm, direction, answer["category"], float(answer["confidence"]),
-                 answer["reason"], answer["suggested_keyword"], status,
-                 answer["category"] if status == "auto" else None))
+                (
+                    description_norm,
+                    history_norm,
+                    direction,
+                    answer["category"],
+                    float(answer["confidence"]),
+                    answer["reason"],
+                    answer["suggested_keyword"],
+                    status,
+                    answer["category"] if status == "auto" else None,
+                ),
+            )
 
     def approve_label(self, label_id: int, category: str, rule_added: str | None, note: str):
         with self.db:
-            self.db.execute("UPDATE labels SET status='approved', final_category=?, rule_added=?, note=? WHERE id=?",
-                            (category, rule_added, note, label_id))
+            self.db.execute(
+                "UPDATE labels SET status='approved', final_category=?, rule_added=?, note=? WHERE id=?",
+                (category, rule_added, note, label_id),
+            )
 
     def imports(self) -> list[sqlite3.Row]:
         return self.db.execute("SELECT * FROM imports ORDER BY id").fetchall()
 
     def snapshot(self) -> list[tuple]:
         """Comparable content of the ledger (used by the idempotency tests)."""
-        return [tuple(r) for r in self.db.execute(
-            "SELECT nkey, category, method FROM transactions ORDER BY nkey").fetchall()]
-
+        return [
+            tuple(r)
+            for r in self.db.execute("SELECT nkey, category, method FROM transactions ORDER BY nkey").fetchall()
+        ]
