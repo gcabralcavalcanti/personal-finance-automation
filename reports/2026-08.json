@@ -1,0 +1,894 @@
+{
+ "month": "2026-08",
+ "rows": 75,
+ "income": 10327.3,
+ "expenses": -8441.35,
+ "net_savings": 1885.95,
+ "savings_rate": 0.1826179156217017,
+ "categories": [
+  {
+   "category": "Income",
+   "rows": 3,
+   "total": 9901.94
+  },
+  {
+   "category": "Housing",
+   "rows": 3,
+   "total": -2964.25
+  },
+  {
+   "category": "Groceries",
+   "rows": 16,
+   "total": -1449.04
+  },
+  {
+   "category": "Shopping",
+   "rows": 5,
+   "total": -1224.93
+  },
+  {
+   "category": "Transport",
+   "rows": 11,
+   "total": -631.02
+  },
+  {
+   "category": "Restaurants & Delivery",
+   "rows": 16,
+   "total": -567.57
+  },
+  {
+   "category": "Education",
+   "rows": 2,
+   "total": -541.49
+  },
+  {
+   "category": "Health",
+   "rows": 3,
+   "total": -430.54
+  },
+  {
+   "category": "Utilities",
+   "rows": 4,
+   "total": -413.73
+  },
+  {
+   "category": "Fees & Taxes",
+   "rows": 2,
+   "total": -95.05
+  },
+  {
+   "category": "Subscriptions",
+   "rows": 3,
+   "total": -71.7
+  },
+  {
+   "category": "Other",
+   "rows": 1,
+   "total": -52.03
+  },
+  {
+   "category": "(in review)",
+   "rows": 1,
+   "total": 425.36
+  }
+ ],
+ "methods": [
+  {
+   "method": "rule",
+   "label": "rule (seed)",
+   "rows": 50,
+   "share": 0.6666666666666666
+  },
+  {
+   "method": "llm",
+   "label": "LLM, confidence >= threshold",
+   "rows": 19,
+   "share": 0.25333333333333335
+  },
+  {
+   "method": "review",
+   "label": "waiting in review",
+   "rows": 1,
+   "share": 0.013333333333333334
+  },
+  {
+   "method": "internal",
+   "label": "internal movement (excluded)",
+   "rows": 5,
+   "share": 0.06666666666666667
+  }
+ ],
+ "top_expenses": [
+  {
+   "date": "2026-08-08",
+   "description": "IMOBILIARIA HORIZONTE ALUGUEL",
+   "amount": -2150.0,
+   "category": "Housing",
+   "method": "rule"
+  },
+  {
+   "date": "2026-08-22",
+   "description": "MAGAZINE ELETRO LAR",
+   "amount": -860.8,
+   "category": "Shopping",
+   "method": "llm"
+  },
+  {
+   "date": "2026-08-10",
+   "description": "CONDOMINIO RESIDENCIAL JACARANDAS",
+   "amount": -634.9,
+   "category": "Housing",
+   "method": "rule"
+  },
+  {
+   "date": "2026-08-10",
+   "description": "ESCOLA DE IDIOMAS FALA FACIL",
+   "amount": -389.0,
+   "category": "Education",
+   "method": "rule"
+  },
+  {
+   "date": "2026-08-22",
+   "description": "ATACADAO DO POVO",
+   "amount": -317.36,
+   "category": "Groceries",
+   "method": "rule"
+  },
+  {
+   "date": "2026-08-23",
+   "description": "CLINICA ODONTO SORRISO",
+   "amount": -207.1,
+   "category": "Health",
+   "method": "llm"
+  },
+  {
+   "date": "2026-08-01",
+   "description": "MATERIAL DE CONSTRUCAO TIJOLAO",
+   "amount": -179.35,
+   "category": "Housing",
+   "method": "llm"
+  },
+  {
+   "date": "2026-08-14",
+   "description": "SUPERMERCADO BOM PRECO",
+   "amount": -168.9,
+   "category": "Groceries",
+   "method": "rule"
+  },
+  {
+   "date": "2026-08-10",
+   "description": "SUPERMERCADO BOM PRECO",
+   "amount": -168.3,
+   "category": "Groceries",
+   "method": "rule"
+  },
+  {
+   "date": "2026-08-25",
+   "description": "SUPERMERCADO BOM PRECO",
+   "amount": -167.04,
+   "category": "Groceries",
+   "method": "rule"
+  }
+ ],
+ "in_review": [
+  {
+   "id": 19,
+   "description": "MARCOS A ROCHA",
+   "llm_category": "Other",
+   "confidence": 0.4,
+   "rows": 1,
+   "total": 425.36
+  }
+ ],
+ "internal": [
+  {
+   "reason": "cash withdrawal",
+   "rows": 1,
+   "total": -100.0
+  },
+  {
+   "reason": "credit-card bill payment",
+   "rows": 1,
+   "total": -795.55
+  },
+  {
+   "reason": "investment application/redemption",
+   "rows": 2,
+   "total": -400.0
+  },
+  {
+   "reason": "transfer between own accounts",
+   "rows": 1,
+   "total": -500.0
+  }
+ ],
+ "imports": [
+  {
+   "file": "statement-2026-08.csv",
+   "encoding": "latin-1",
+   "rows_in_file": 75,
+   "new_rows": 75,
+   "duplicates": 0,
+   "reconciled": true,
+   "detail": "running balance consistent over 75 rows; header balance matches the closing balance"
+  }
+ ],
+ "reconciled": true,
+ "transactions": [
+  {
+   "date": "2026-08-01",
+   "history": "Compra no débito",
+   "description": "MATERIAL DE CONSTRUCAO TIJOLAO",
+   "amount": -179.35,
+   "category": "Housing",
+   "method": "llm",
+   "detail": "confidence 0.90"
+  },
+  {
+   "date": "2026-08-02",
+   "history": "Compra no débito",
+   "description": "CAFETERIA GRAO NOBRE",
+   "amount": -11.33,
+   "category": "Restaurants & Delivery",
+   "method": "llm",
+   "detail": "confidence 0.90"
+  },
+  {
+   "date": "2026-08-03",
+   "history": "Compra no débito",
+   "description": "STREAMFLIX ASSINATURA",
+   "amount": -39.9,
+   "category": "Subscriptions",
+   "method": "rule",
+   "detail": "STREAMFLIX"
+  },
+  {
+   "date": "2026-08-03",
+   "history": "Compra no débito",
+   "description": "PAG*GAMEPLAY STORE",
+   "amount": -84.54,
+   "category": "Shopping",
+   "method": "llm",
+   "detail": "confidence 0.80"
+  },
+  {
+   "date": "2026-08-04",
+   "history": "Compra no débito",
+   "description": "AUTO POSTO ESTRELA",
+   "amount": -150.0,
+   "category": "Transport",
+   "method": "rule",
+   "detail": "AUTO POSTO"
+  },
+  {
+   "date": "2026-08-04",
+   "history": "Compra no débito",
+   "description": "RANGOJA*ACAI TROPICAL",
+   "amount": -50.57,
+   "category": "Restaurants & Delivery",
+   "method": "rule",
+   "detail": "RANGOJA"
+  },
+  {
+   "date": "2026-08-05",
+   "history": "Compra no débito",
+   "description": "PEDAGIO RODOVIA DAS FLORES",
+   "amount": -11.57,
+   "category": "Transport",
+   "method": "llm",
+   "detail": "confidence 0.95"
+  },
+  {
+   "date": "2026-08-05",
+   "history": "Pix recebido",
+   "description": "ACME SERVICOS DIGITAIS LTDA",
+   "amount": 9600.0,
+   "category": "Income",
+   "method": "rule",
+   "detail": "ACME SERVICOS"
+  },
+  {
+   "date": "2026-08-06",
+   "history": "Compra no débito",
+   "description": "VAIJA *VIAGEM YW7C",
+   "amount": -45.07,
+   "category": "Transport",
+   "method": "rule",
+   "detail": "VAIJA"
+  },
+  {
+   "date": "2026-08-06",
+   "history": "Pix enviado",
+   "description": "ANA EXEMPLO",
+   "amount": -500.0,
+   "category": null,
+   "method": "internal",
+   "detail": "transfer between own accounts"
+  },
+  {
+   "date": "2026-08-06",
+   "history": "Compra no débito",
+   "description": "ACADEMIA CORPO ATIVO",
+   "amount": -119.9,
+   "category": "Health",
+   "method": "rule",
+   "detail": "ACADEMIA CORPO ATIVO"
+  },
+  {
+   "date": "2026-08-06",
+   "history": "Compra no débito",
+   "description": "RESTAURANTE SABOR CASEIRO",
+   "amount": -41.17,
+   "category": "Restaurants & Delivery",
+   "method": "rule",
+   "detail": "RESTAURANTE"
+  },
+  {
+   "date": "2026-08-07",
+   "history": "Compra no débito",
+   "description": "CAFETERIA GRAO NOBRE",
+   "amount": -27.95,
+   "category": "Restaurants & Delivery",
+   "method": "llm",
+   "detail": "confidence 0.90"
+  },
+  {
+   "date": "2026-08-07",
+   "history": "Compra no débito",
+   "description": "HORTIFRUTI FOLHA VERDE",
+   "amount": -72.36,
+   "category": "Groceries",
+   "method": "rule",
+   "detail": "HORTIFRUTI"
+  },
+  {
+   "date": "2026-08-07",
+   "history": "Aplicação",
+   "description": "CDB LIQUIDEZ DIARIA",
+   "amount": -1000.0,
+   "category": null,
+   "method": "internal",
+   "detail": "investment application/redemption"
+  },
+  {
+   "date": "2026-08-07",
+   "history": "Compra no débito",
+   "description": "RANGOJA*ACAI TROPICAL",
+   "amount": -78.05,
+   "category": "Restaurants & Delivery",
+   "method": "rule",
+   "detail": "RANGOJA"
+  },
+  {
+   "date": "2026-08-08",
+   "history": "Pagamento efetuado",
+   "description": "IMOBILIARIA HORIZONTE ALUGUEL",
+   "amount": -2150.0,
+   "category": "Housing",
+   "method": "rule",
+   "detail": "IMOBILIARIA HORIZONTE"
+  },
+  {
+   "date": "2026-08-08",
+   "history": "Compra no débito",
+   "description": "PET SHOP AMIGO FIEL",
+   "amount": -134.11,
+   "category": "Shopping",
+   "method": "llm",
+   "detail": "confidence 0.85"
+  },
+  {
+   "date": "2026-08-09",
+   "history": "Compra no débito",
+   "description": "RANGOJA*BURGUER DO BAIRRO",
+   "amount": -38.08,
+   "category": "Restaurants & Delivery",
+   "method": "rule",
+   "detail": "RANGOJA"
+  },
+  {
+   "date": "2026-08-09",
+   "history": "Compra no débito",
+   "description": "VAIJA *VIAGEM WP75",
+   "amount": -47.19,
+   "category": "Transport",
+   "method": "rule",
+   "detail": "VAIJA"
+  },
+  {
+   "date": "2026-08-09",
+   "history": "Compra no débito",
+   "description": "SONORA MUSIC PREMIUM",
+   "amount": -21.9,
+   "category": "Subscriptions",
+   "method": "rule",
+   "detail": "SONORA MUSIC"
+  },
+  {
+   "date": "2026-08-10",
+   "history": "Compra no débito",
+   "description": "SUPERMERCADO BOM PRECO",
+   "amount": -168.3,
+   "category": "Groceries",
+   "method": "rule",
+   "detail": "SUPERMERCADO"
+  },
+  {
+   "date": "2026-08-10",
+   "history": "Compra no débito",
+   "description": "VAIJA *VIAGEM SEA4",
+   "amount": -42.79,
+   "category": "Transport",
+   "method": "rule",
+   "detail": "VAIJA"
+  },
+  {
+   "date": "2026-08-10",
+   "history": "Pagamento efetuado",
+   "description": "ESCOLA DE IDIOMAS FALA FACIL",
+   "amount": -389.0,
+   "category": "Education",
+   "method": "rule",
+   "detail": "FALA FACIL"
+  },
+  {
+   "date": "2026-08-10",
+   "history": "Pagamento efetuado",
+   "description": "CONDOMINIO RESIDENCIAL JACARANDAS",
+   "amount": -634.9,
+   "category": "Housing",
+   "method": "rule",
+   "detail": "CONDOMINIO RESIDENCIAL"
+  },
+  {
+   "date": "2026-08-11",
+   "history": "Compra no débito",
+   "description": "PADARIA TRIGO DOURADO",
+   "amount": -33.39,
+   "category": "Groceries",
+   "method": "rule",
+   "detail": "PADARIA"
+  },
+  {
+   "date": "2026-08-11",
+   "history": "Compra no débito",
+   "description": "VAIJA *VIAGEM BVHG",
+   "amount": -35.75,
+   "category": "Transport",
+   "method": "rule",
+   "detail": "VAIJA"
+  },
+  {
+   "date": "2026-08-11",
+   "history": "Saque",
+   "description": "SAQUE BANCO 24 HORAS",
+   "amount": -100.0,
+   "category": null,
+   "method": "internal",
+   "detail": "cash withdrawal"
+  },
+  {
+   "date": "2026-08-12",
+   "history": "Débito automático",
+   "description": "NETVELOZ INTERNET FIBRA",
+   "amount": -119.9,
+   "category": "Utilities",
+   "method": "rule",
+   "detail": "NETVELOZ"
+  },
+  {
+   "date": "2026-08-12",
+   "history": "Pagamento fatura",
+   "description": "PAGAMENTO FATURA CARTAO",
+   "amount": -795.55,
+   "category": null,
+   "method": "internal",
+   "detail": "credit-card bill payment"
+  },
+  {
+   "date": "2026-08-13",
+   "history": "Compra no débito",
+   "description": "ESTACIONAMENTO CENTRAL PARK",
+   "amount": -19.58,
+   "category": "Transport",
+   "method": "llm",
+   "detail": "confidence 0.90"
+  },
+  {
+   "date": "2026-08-13",
+   "history": "Compra no débito",
+   "description": "AUTO POSTO ESTRELA",
+   "amount": -11.55,
+   "category": "Groceries",
+   "method": "rule",
+   "detail": "AUTO POSTO"
+  },
+  {
+   "date": "2026-08-13",
+   "history": "Compra no débito",
+   "description": "ESTACIONAMENTO CENTRAL PARK",
+   "amount": -16.31,
+   "category": "Transport",
+   "method": "llm",
+   "detail": "confidence 0.90"
+  },
+  {
+   "date": "2026-08-14",
+   "history": "Compra no débito",
+   "description": "PADARIA TRIGO DOURADO",
+   "amount": -13.47,
+   "category": "Groceries",
+   "method": "rule",
+   "detail": "PADARIA"
+  },
+  {
+   "date": "2026-08-14",
+   "history": "Compra no débito",
+   "description": "SUPERMERCADO BOM PRECO",
+   "amount": -168.9,
+   "category": "Groceries",
+   "method": "rule",
+   "detail": "SUPERMERCADO"
+  },
+  {
+   "date": "2026-08-15",
+   "history": "Débito automático",
+   "description": "COMPANHIA LUZ E FORCA",
+   "amount": -156.85,
+   "category": "Utilities",
+   "method": "rule",
+   "detail": "LUZ E FORCA"
+  },
+  {
+   "date": "2026-08-15",
+   "history": "Compra no débito",
+   "description": "SUPERMERCADO BOM PRECO",
+   "amount": -109.35,
+   "category": "Groceries",
+   "method": "rule",
+   "detail": "SUPERMERCADO"
+  },
+  {
+   "date": "2026-08-16",
+   "history": "Compra no débito",
+   "description": "SUPERMERCADO BOM PRECO",
+   "amount": -86.59,
+   "category": "Groceries",
+   "method": "rule",
+   "detail": "SUPERMERCADO"
+  },
+  {
+   "date": "2026-08-16",
+   "history": "Pagamento efetuado",
+   "description": "CARTORIO 2 OFICIO DE NOTAS",
+   "amount": -62.15,
+   "category": "Fees & Taxes",
+   "method": "llm",
+   "detail": "confidence 0.85"
+  },
+  {
+   "date": "2026-08-18",
+   "history": "Débito automático",
+   "description": "AGUAS DO VALE SANEAMENTO",
+   "amount": -76.99,
+   "category": "Utilities",
+   "method": "rule",
+   "detail": "AGUAS DO VALE"
+  },
+  {
+   "date": "2026-08-18",
+   "history": "Compra no débito",
+   "description": "RANGOJA*MARMITA DA VO",
+   "amount": -42.79,
+   "category": "Restaurants & Delivery",
+   "method": "rule",
+   "detail": "RANGOJA"
+  },
+  {
+   "date": "2026-08-18",
+   "history": "Compra no débito",
+   "description": "PADARIA TRIGO DOURADO",
+   "amount": -8.82,
+   "category": "Groceries",
+   "method": "rule",
+   "detail": "PADARIA"
+  },
+  {
+   "date": "2026-08-18",
+   "history": "Compra no débito",
+   "description": "CAFETERIA GRAO NOBRE",
+   "amount": -12.08,
+   "category": "Restaurants & Delivery",
+   "method": "llm",
+   "detail": "confidence 0.90"
+  },
+  {
+   "date": "2026-08-20",
+   "history": "Compra no débito",
+   "description": "RANGOJA*BURGUER DO BAIRRO",
+   "amount": -74.23,
+   "category": "Restaurants & Delivery",
+   "method": "rule",
+   "detail": "RANGOJA"
+  },
+  {
+   "date": "2026-08-20",
+   "history": "Compra no débito",
+   "description": "LANCHONETE DA ESQUINA",
+   "amount": -18.95,
+   "category": "Restaurants & Delivery",
+   "method": "llm",
+   "detail": "confidence 0.90"
+  },
+  {
+   "date": "2026-08-20",
+   "history": "Débito automático",
+   "description": "ALO MOVEL TELEFONIA",
+   "amount": -59.99,
+   "category": "Utilities",
+   "method": "rule",
+   "detail": "ALO MOVEL"
+  },
+  {
+   "date": "2026-08-21",
+   "history": "Compra no débito",
+   "description": "LANCHONETE DA ESQUINA",
+   "amount": -21.77,
+   "category": "Restaurants & Delivery",
+   "method": "llm",
+   "detail": "confidence 0.90"
+  },
+  {
+   "date": "2026-08-21",
+   "history": "Compra no débito",
+   "description": "LANCHONETE DA ESQUINA",
+   "amount": -14.9,
+   "category": "Restaurants & Delivery",
+   "method": "llm",
+   "detail": "confidence 0.90"
+  },
+  {
+   "date": "2026-08-21",
+   "history": "Compra no débito",
+   "description": "PADARIA TRIGO DOURADO",
+   "amount": -33.01,
+   "category": "Groceries",
+   "method": "rule",
+   "detail": "PADARIA"
+  },
+  {
+   "date": "2026-08-22",
+   "history": "Compra no débito",
+   "description": "RANGOJA*MERCADINHO EXPRESSO",
+   "amount": -44.83,
+   "category": "Groceries",
+   "method": "rule",
+   "detail": "RANGOJA*MERCADINHO"
+  },
+  {
+   "date": "2026-08-22",
+   "history": "Compra no débito",
+   "description": "NUVEMDRIVE ARMAZENAMENTO",
+   "amount": -9.9,
+   "category": "Subscriptions",
+   "method": "rule",
+   "detail": "NUVEMDRIVE"
+  },
+  {
+   "date": "2026-08-22",
+   "history": "Compra no débito",
+   "description": "MAGAZINE ELETRO LAR",
+   "amount": -860.8,
+   "category": "Shopping",
+   "method": "llm",
+   "detail": "confidence 0.90"
+  },
+  {
+   "date": "2026-08-22",
+   "history": "Compra no débito",
+   "description": "ATACADAO DO POVO",
+   "amount": -317.36,
+   "category": "Groceries",
+   "method": "rule",
+   "detail": "ATACADAO"
+  },
+  {
+   "date": "2026-08-23",
+   "history": "Pix enviado",
+   "description": "CLINICA ODONTO SORRISO",
+   "amount": -207.1,
+   "category": "Health",
+   "method": "llm",
+   "detail": "confidence 0.92"
+  },
+  {
+   "date": "2026-08-23",
+   "history": "Compra no débito",
+   "description": "RANGOJA*SUSHI KAZU",
+   "amount": -38.39,
+   "category": "Restaurants & Delivery",
+   "method": "rule",
+   "detail": "RANGOJA"
+  },
+  {
+   "date": "2026-08-23",
+   "history": "Compra no débito",
+   "description": "PAGAFACIL*CASA E DECOR",
+   "amount": -109.42,
+   "category": "Shopping",
+   "method": "rule",
+   "detail": "PAGAFACIL"
+  },
+  {
+   "date": "2026-08-24",
+   "history": "Compra no débito",
+   "description": "CAFETERIA GRAO NOBRE",
+   "amount": -9.71,
+   "category": "Restaurants & Delivery",
+   "method": "llm",
+   "detail": "confidence 0.90"
+  },
+  {
+   "date": "2026-08-24",
+   "history": "Pix recebido",
+   "description": "PAGAFACIL REPASSE VENDAS",
+   "amount": 290.82,
+   "category": "Income",
+   "method": "rule",
+   "detail": "PAGAFACIL"
+  },
+  {
+   "date": "2026-08-24",
+   "history": "Compra no débito",
+   "description": "DROGARIA SAO BENTO",
+   "amount": -103.54,
+   "category": "Health",
+   "method": "rule",
+   "detail": "DROGARIA"
+  },
+  {
+   "date": "2026-08-24",
+   "history": "Compra no débito",
+   "description": "RESTAURANTE SABOR CASEIRO",
+   "amount": -55.13,
+   "category": "Restaurants & Delivery",
+   "method": "rule",
+   "detail": "RESTAURANTE"
+  },
+  {
+   "date": "2026-08-25",
+   "history": "Compra no débito",
+   "description": "SUPERMERCADO BOM PRECO",
+   "amount": -167.04,
+   "category": "Groceries",
+   "method": "rule",
+   "detail": "SUPERMERCADO"
+  },
+  {
+   "date": "2026-08-25",
+   "history": "Resgate",
+   "description": "CDB LIQUIDEZ DIARIA",
+   "amount": 600.0,
+   "category": null,
+   "method": "internal",
+   "detail": "investment application/redemption"
+  },
+  {
+   "date": "2026-08-26",
+   "history": "Compra no débito",
+   "description": "PADARIA TRIGO DOURADO",
+   "amount": -33.4,
+   "category": "Groceries",
+   "method": "rule",
+   "detail": "PADARIA"
+  },
+  {
+   "date": "2026-08-26",
+   "history": "Compra no débito",
+   "description": "RESTAURANTE SABOR CASEIRO",
+   "amount": -32.47,
+   "category": "Restaurants & Delivery",
+   "method": "rule",
+   "detail": "RESTAURANTE"
+  },
+  {
+   "date": "2026-08-27",
+   "history": "Compra no débito",
+   "description": "METRO RECARGA CARTAO TRANSPORTE",
+   "amount": -100.0,
+   "category": "Transport",
+   "method": "rule",
+   "detail": "METRO RECARGA"
+  },
+  {
+   "date": "2026-08-27",
+   "history": "Compra no débito",
+   "description": "SUPERMERCADO BOM PRECO",
+   "amount": -149.48,
+   "category": "Groceries",
+   "method": "rule",
+   "detail": "SUPERMERCADO"
+  },
+  {
+   "date": "2026-08-28",
+   "history": "Tarifa",
+   "description": "TARIFA PACOTE DE SERVICOS",
+   "amount": -32.9,
+   "category": "Fees & Taxes",
+   "method": "rule",
+   "detail": "TARIFA PACOTE"
+  },
+  {
+   "date": "2026-08-28",
+   "history": "Compra no débito",
+   "description": "HORTIFRUTI FOLHA VERDE",
+   "amount": -31.19,
+   "category": "Groceries",
+   "method": "rule",
+   "detail": "HORTIFRUTI"
+  },
+  {
+   "date": "2026-08-29",
+   "history": "Compra no débito",
+   "description": "LIVRARIA PAGINA CERTA",
+   "amount": -36.06,
+   "category": "Shopping",
+   "method": "rule",
+   "detail": "LIVRARIA"
+  },
+  {
+   "date": "2026-08-29",
+   "history": "Compra no débito",
+   "description": "AUTO POSTO ESTRELA",
+   "amount": -150.0,
+   "category": "Transport",
+   "method": "rule",
+   "detail": "AUTO POSTO"
+  },
+  {
+   "date": "2026-08-29",
+   "history": "Compra no débito",
+   "description": "CURSO ONLINE APRENDA MAIS",
+   "amount": -152.49,
+   "category": "Education",
+   "method": "llm",
+   "detail": "confidence 0.90"
+  },
+  {
+   "date": "2026-08-30",
+   "history": "Compra no débito",
+   "description": "VAIJA *VIAGEM S4AD",
+   "amount": -12.76,
+   "category": "Transport",
+   "method": "rule",
+   "detail": "VAIJA"
+  },
+  {
+   "date": "2026-08-31",
+   "history": "Rendimento",
+   "description": "RENDIMENTO CONTA REMUNERADA",
+   "amount": 11.12,
+   "category": "Income",
+   "method": "llm",
+   "detail": "confidence 0.95"
+  },
+  {
+   "date": "2026-08-31",
+   "history": "Pix enviado",
+   "description": "INSTITUTO ESPERANCA DOACAO",
+   "amount": -52.03,
+   "category": "Other",
+   "method": "llm",
+   "detail": "confidence 0.85"
+  },
+  {
+   "date": "2026-08-31",
+   "history": "Pix recebido",
+   "description": "MARCOS A ROCHA",
+   "amount": 425.36,
+   "category": null,
+   "method": "review",
+   "detail": "LLM suggests Other (0.40)"
+  }
+ ]
+}

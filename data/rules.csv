@@ -1,0 +1,29 @@
+keyword,category,origin,min,max,value_category,cents,source
+ACME SERVICOS,Income,in,,,,,seed
+IMOBILIARIA HORIZONTE,Housing,,,,,,seed
+CONDOMINIO RESIDENCIAL,Housing,,,,,,seed
+LUZ E FORCA,Utilities,,,,,,seed
+AGUAS DO VALE,Utilities,,,,,,seed
+NETVELOZ,Utilities,,,,,,seed
+ALO MOVEL,Utilities,,,,,,seed
+STREAMFLIX,Subscriptions,,,,,,seed
+SONORA MUSIC,Subscriptions,,,,,,seed
+NUVEMDRIVE,Subscriptions,,,,,,seed
+FALA FACIL,Education,,,,,,seed
+ACADEMIA CORPO ATIVO,Health,,,,,,seed
+TARIFA PACOTE,Fees & Taxes,,,,,,seed
+SUPERMERCADO,Groceries,,,,,,seed
+HORTIFRUTI,Groceries,,,,,,seed
+PADARIA,Groceries,,,,,,seed
+ATACADAO,Groceries,,,,,,seed
+RANGOJA,Restaurants & Delivery,,,,,,seed
+RANGOJA*MERCADINHO,Groceries,,,,,,seed
+RESTAURANTE,Restaurants & Delivery,,,,,,seed
+VAIJA,Transport,,,,,,seed
+AUTO POSTO,Transport,,,,Groceries,non-round,seed
+METRO RECARGA,Transport,,,,,,seed
+DROGARIA,Health,,,,,,seed
+LIVRARIA,Shopping,,100.00,,Education,,seed
+PAGAFACIL,Shopping,out,,,,,seed
+PAGAFACIL,Income,in,,,,,seed
+CARLA M SOUZA,Income,,,,,,review
