@@ -1,8 +1,8 @@
 # personal-finance-automation
 
-Public version of the system I use for my own finances: it reads the monthly bank statement, puts every transaction
-in a category and writes a monthly report. Fixed rules handle the usual shops, Claude handles the rest, and anything
-uncertain waits for me.
+Public version, in Python, of the system I use for my own finances: it reads the monthly bank statement, puts every
+transaction in a category and writes a monthly report. Fixed rules handle the usual shops; in this version Claude
+handles the rest, and anything uncertain waits for me.
 
 ![Synthetic data — no private records](https://img.shields.io/badge/data-synthetic%20%E2%80%94%20no%20private%20records-e07b39)
 ![Built with AI assistance](https://img.shields.io/badge/built%20with-AI%20assistance-6f42c1)
@@ -11,11 +11,20 @@ uncertain waits for me.
 
 ## What it shows
 
-- Rules sort most of the statement; the AI only sees shops the rules do not know yet, and each answer I confirm
+- Rules sort most of the statement; the AI only sees shops the rules do not know yet, and each confirmed answer
   becomes a new rule, so the AI is called less every month.
 - Loading the same statement twice adds nothing, and every balance is checked line by line.
 - The AI says how sure it is, and anything uncertain goes to a review list instead of the report
   ([`final-report.pdf`](final-report.pdf)).
+
+## How I use it
+
+My real system is an Excel workbook with a VBA engine and small Python import scripts, not this code. Once a month I
+download the bank statement and the credit-card bill, run the import, check the totals and press the consolidate
+buttons; shops the rules do not know show up in a list and I pick their category by hand, adding a rule when the shop
+repeats. Every week, and again at the end of the month, I close the cash flow from that workbook. This repository
+rebuilds the same monthly cycle in Python and adds one thing my workbook does not have: the AI suggestion, with how
+sure it is, for the shops I used to sort by hand. Nothing runs on a schedule; I start each step.
 
 ## Run it
 
