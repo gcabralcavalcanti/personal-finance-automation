@@ -10,7 +10,7 @@ python -m pytest -q       # offline tests
 
 ## Monthly use with a new statement
 
-1. Export the statement as CSV (format in the README, "Statement format") and save it anywhere.
+1. Export the statement as CSV (format in [docs/how-it-works.md](docs/how-it-works.md#statement-format)) and save it anywhere.
 2. Load it: `python -m finance_automation import path/to/statement.csv`
    It prints how many lines were new, how many were already in the database, and whether the balances add up.
    Loading the same file again is safe: nothing is added.
@@ -28,7 +28,7 @@ The database is `data/ledger.sqlite`. To start over, delete that file; the next 
 
 | Message or symptom | What to do |
 |---|---|
-| `table header 'Data Lançamento;...' not found` | The file is not in the expected layout. Open it, compare with the README example, or adapt `statement.py` ("Using another bank") |
+| `table header 'Data Lançamento;...' not found` | The file is not in the expected layout. Open it, compare with the example in `docs/how-it-works.md`, or adapt `statement.py` (same file, "Using another bank") |
 | `balance check FAILED` | A line is missing or was edited in the export. Export the statement again; the report says which rows break the chain |
 | `could not decode the file` | Save the CSV as UTF-8 and import again |
 | `No recorded answer ... run once with an API key` | A shop is new and there is no key. Set `ANTHROPIC_API_KEY`, or classify it with `review` |
