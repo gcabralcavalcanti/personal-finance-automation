@@ -143,23 +143,28 @@ def write(path: Path, months: list[dict], ev: dict, reimport: dict | None = None
         acc = ev.get("accuracy") or 0
         auto_acc = ev.get("auto_accuracy") or 0
         items = [
-            ["Golden set: descriptions the rules miss", str(ev["golden"])],
+            ["Shops with a known right category (answer key)", str(ev["golden"])],
             ["Accuracy, all answers", f"{acc:.1%}"],
             ["Applied automatically (high confidence)", str(ev["auto_applied"])],
             ["Accuracy of those", f"{auto_acc:.1%}"],
             ["Sent to human review", str(ev["sent_to_review"])],
             ["Errors caught by review", str(ev["errors_caught_by_review"])],
+            ["Wrong but confident (used without review)", str(len(ev.get("confident_errors", [])))],
         ]
         if reimport:
             items.append(
                 ["Month imported twice: new rows / duplicates", f"{reimport['new_rows']} / {reimport['duplicates']}"]
             )
         _table(fig, [0.56, 0.55, 0.4, 0.3], ["Eval and checks", "Result"], items, [0.8, 0.2])
-        errors = [f"{c['expected']} -> {c['predicted']} ({c['count']})" for c in ev.get("confusion", [])]
+        errors = [
+            f"{r['description']}\n  expected {r['expected']}, got {r['predicted']} (confidence {r['confidence']:.2f})"
+            for r in ev.get("rows", [])
+            if not r["correct"]
+        ]
         fig.text(
             0.56,
             0.5,
-            "Errors: " + ("; ".join(errors) if errors else "none"),
+            "Wrong answers:\n" + ("\n".join(f"- {e}" for e in errors) if errors else "none"),
             fontsize=9,
             color=INK,
             va="top",
@@ -170,7 +175,7 @@ def write(path: Path, months: list[dict], ev: dict, reimport: dict | None = None
         waiting = "\n".join(f"- {x}" for x in pending) if pending else "none"
         fig.text(
             0.56,
-            0.45,
+            0.4,
             "Waiting for a person:\n" + waiting,
             fontsize=9,
             color=INK,

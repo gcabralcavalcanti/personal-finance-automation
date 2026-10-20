@@ -175,7 +175,7 @@
    "id": 9,
    "description": "PEDRO H LIMA",
    "llm_category": "Other",
-   "confidence": 0.5,
+   "confidence": 0.4,
    "rows": 1,
    "total": -116.86
   }
@@ -303,7 +303,7 @@
    "amount": -29.29,
    "category": "Restaurants & Delivery",
    "method": "llm",
-   "detail": "confidence 0.90"
+   "detail": "confidence 0.93"
   },
   {
    "date": "2026-07-04",
@@ -375,7 +375,7 @@
    "amount": -26.28,
    "category": "Restaurants & Delivery",
    "method": "llm",
-   "detail": "confidence 0.90"
+   "detail": "confidence 0.93"
   },
   {
    "date": "2026-07-08",
@@ -429,7 +429,7 @@
    "amount": -121.43,
    "category": "Shopping",
    "method": "llm",
-   "detail": "confidence 0.85"
+   "detail": "confidence 0.90"
   },
   {
    "date": "2026-07-11",
@@ -501,7 +501,7 @@
    "amount": -320.7,
    "category": "Fees & Taxes",
    "method": "llm",
-   "detail": "confidence 0.95"
+   "detail": "confidence 0.97"
   },
   {
    "date": "2026-07-14",
@@ -582,7 +582,7 @@
    "amount": -172.5,
    "category": "Health",
    "method": "llm",
-   "detail": "confidence 0.90"
+   "detail": "confidence 0.95"
   },
   {
    "date": "2026-07-19",
@@ -591,7 +591,7 @@
    "amount": -187.9,
    "category": "Shopping",
    "method": "llm",
-   "detail": "confidence 0.90"
+   "detail": "confidence 0.95"
   },
   {
    "date": "2026-07-19",
@@ -627,7 +627,7 @@
    "amount": -105.75,
    "category": "Restaurants & Delivery",
    "method": "llm",
-   "detail": "confidence 0.95"
+   "detail": "confidence 0.97"
   },
   {
    "date": "2026-07-21",
@@ -663,7 +663,7 @@
    "amount": -23.44,
    "category": "Transport",
    "method": "llm",
-   "detail": "confidence 0.90"
+   "detail": "confidence 0.93"
   },
   {
    "date": "2026-07-22",
@@ -717,7 +717,7 @@
    "amount": -807.28,
    "category": "Travel",
    "method": "llm",
-   "detail": "confidence 0.90"
+   "detail": "confidence 0.96"
   },
   {
    "date": "2026-07-25",
@@ -726,7 +726,7 @@
    "amount": -14.79,
    "category": "Transport",
    "method": "llm",
-   "detail": "confidence 0.90"
+   "detail": "confidence 0.93"
   },
   {
    "date": "2026-07-27",
@@ -780,7 +780,7 @@
    "amount": -602.29,
    "category": "Travel",
    "method": "llm",
-   "detail": "confidence 0.90"
+   "detail": "confidence 0.95"
   },
   {
    "date": "2026-07-29",
@@ -852,7 +852,7 @@
    "amount": -116.86,
    "category": null,
    "method": "review",
-   "detail": "LLM suggests Other (0.50)"
+   "detail": "LLM suggests Other (0.40)"
   },
   {
    "date": "2026-07-30",
@@ -879,7 +879,7 @@
    "amount": 17.76,
    "category": "Income",
    "method": "llm",
-   "detail": "confidence 0.95"
+   "detail": "confidence 0.97"
   },
   {
    "date": "2026-07-31",

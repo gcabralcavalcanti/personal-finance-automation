@@ -47,6 +47,7 @@ def run(llm: LLM, golden: list[dict] | None = None, threshold: float = config.CO
         "auto_accuracy": sum(r["correct"] for r in auto) / len(auto) if auto else None,
         "sent_to_review": n - len(auto),
         "errors_caught_by_review": sum(1 for r in rows if not r["correct"] and not r["auto"]),
+        "confident_errors": [r for r in rows if not r["correct"] and r["auto"]],  # would pass without review
         "confusion": [{"expected": e, "predicted": p, "count": c} for (e, p), c in sorted(confusion.items())],
         "rows": rows,
     }
@@ -66,6 +67,11 @@ def to_text(res: dict) -> str:
         "Confusion (expected -> predicted, errors only):",
     ]
     L += [f"  {c['expected']} -> {c['predicted']}: {c['count']}" for c in res["confusion"]] or ["  none"]
+    L.append("Wrong but confident (would be used without review):")
+    L += [
+        f"  {r['description']}: expected {r['expected']}, got {r['predicted']} at {r['confidence']:.2f}"
+        for r in res["confident_errors"]
+    ] or ["  none"]
     return "\n".join(L)
 
 

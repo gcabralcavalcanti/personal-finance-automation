@@ -15,6 +15,7 @@ from collections import Counter
 from . import config
 from .ledger import Ledger
 from .llm import LLM, BudgetExceeded, NoRecording
+from .privacy import is_person, shown_to_model
 from .rules import RuleBook, internal_reason
 from .text import normalize
 
@@ -24,7 +25,8 @@ SYSTEM_PROMPT = (
     "transaction type, in Portuguese: COMPRA NO DEBITO = debit-card purchase, PIX ENVIADO / PIX RECEBIDO = "
     "instant transfer sent / received, PAGAMENTO EFETUADO = bill paid, DEBITO AUTOMATICO = direct debit, "
     "TARIFA = bank fee, JUROS = interest charged) and description (merchant or counterpart, uppercase, "
-    "accents removed; may carry a payment-processor prefix such as 'PAG*').\n\n"
+    "accents removed; may carry a payment-processor prefix such as 'PAG*'). A description written <PERSON> "
+    "is a private individual's name, removed for privacy.\n\n"
     "Categories (use exactly one of these names):\n"
     + "\n".join(f"- {name}: {definition}" for name, definition in config.CATEGORIES.items())
     + "\n\nFor every line return:\n"
@@ -35,7 +37,8 @@ SYSTEM_PROMPT = (
     "- reason: at most 8 words;\n"
     "- suggested_keyword: the merchant core of the description, copied exactly from it (uppercase, no "
     "accents), at least 3 characters, without processor prefixes, dates or reference numbers. It will "
-    "become a substring rule for future months, so it must identify this merchant and not others.\n"
+    "become a substring rule for future months, so it must identify this merchant and not others. "
+    "For <PERSON> lines write <PERSON>.\n"
 )
 
 
@@ -61,7 +64,10 @@ def answer_schema() -> dict:
 
 
 def batch_prompt(items: list[dict]) -> str:
-    lines = [f"{i} | {it['direction']} | {it['history']} | {it['description']}" for i, it in enumerate(items)]
+    lines = [
+        f"{i} | {it['direction']} | {it['history']} | {shown_to_model(it['description'], it['history'])}"
+        for i, it in enumerate(items)
+    ]
     return f"Classify these {len(items)} statement lines (index | direction | history | description):\n" + "\n".join(
         lines
     )
@@ -89,6 +95,8 @@ def make_check(items: list[dict]):
                 problems.append(f"index {a['index']}: unknown category {a['category']!r}")
             if not 0 <= a["confidence"] <= 1:
                 problems.append(f"index {a['index']}: confidence must be between 0 and 1")
+            if is_person(items[a["index"]]["description"], items[a["index"]]["history"]):
+                continue  # the model never saw the name; the keyword is set from the local text
             kw = normalize(a["suggested_keyword"])
             if len(kw) < config.MIN_KEYWORD_LEN or kw not in items[a["index"]]["description"]:
                 problems.append(
@@ -124,7 +132,8 @@ def classify_descriptions(
             return out, str(e)
         for a in answer["items"]:
             it = batch[a["index"]]
-            out[it["description"]] = {**a, "suggested_keyword": normalize(a["suggested_keyword"])}
+            keyword = it["description"] if is_person(it["description"], it["history"]) else a["suggested_keyword"]
+            out[it["description"]] = {**a, "suggested_keyword": normalize(keyword)}
     return out, None
 
 

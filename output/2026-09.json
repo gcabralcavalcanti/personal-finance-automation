@@ -77,14 +77,14 @@
   {
    "method": "learned_rule",
    "label": "rule (learned in review)",
-   "rows": 1,
-   "share": 0.0136986301369863
+   "rows": 2,
+   "share": 0.0273972602739726
   },
   {
    "method": "llm",
    "label": "LLM, confidence >= threshold",
-   "rows": 17,
-   "share": 0.2328767123287671
+   "rows": 16,
+   "share": 0.2191780821917808
   },
   {
    "method": "internal",
@@ -134,7 +134,7 @@
    "description": "JOSE ELETRICISTA REPAROS",
    "amount": -217.01,
    "category": "Housing",
-   "method": "llm"
+   "method": "learned_rule"
   },
   {
    "date": "2026-09-18",
@@ -202,8 +202,8 @@
    "description": "JOSE ELETRICISTA REPAROS",
    "amount": -217.01,
    "category": "Housing",
-   "method": "llm",
-   "detail": "confidence 0.80"
+   "method": "learned_rule",
+   "detail": "JOSE ELETRICISTA REPAROS"
   },
   {
    "date": "2026-09-01",
@@ -302,7 +302,7 @@
    "amount": -58.48,
    "category": "Subscriptions",
    "method": "llm",
-   "detail": "confidence 0.90"
+   "detail": "confidence 0.85"
   },
   {
    "date": "2026-09-05",
@@ -365,7 +365,7 @@
    "amount": -82.24,
    "category": "Education",
    "method": "llm",
-   "detail": "confidence 0.85"
+   "detail": "confidence 0.80"
   },
   {
    "date": "2026-09-07",
@@ -410,7 +410,7 @@
    "amount": -28.14,
    "category": "Restaurants & Delivery",
    "method": "llm",
-   "detail": "confidence 0.90"
+   "detail": "confidence 0.93"
   },
   {
    "date": "2026-09-09",
@@ -581,7 +581,7 @@
    "amount": -83.96,
    "category": "Shopping",
    "method": "llm",
-   "detail": "confidence 0.85"
+   "detail": "confidence 0.90"
   },
   {
    "date": "2026-09-16",
@@ -608,7 +608,7 @@
    "amount": -15.37,
    "category": "Restaurants & Delivery",
    "method": "llm",
-   "detail": "confidence 0.90"
+   "detail": "confidence 0.93"
   },
   {
    "date": "2026-09-18",
@@ -761,7 +761,7 @@
    "amount": -27.32,
    "category": "Transport",
    "method": "llm",
-   "detail": "confidence 0.90"
+   "detail": "confidence 0.93"
   },
   {
    "date": "2026-09-25",
@@ -797,7 +797,7 @@
    "amount": -26.44,
    "category": "Transport",
    "method": "llm",
-   "detail": "confidence 0.90"
+   "detail": "confidence 0.93"
   },
   {
    "date": "2026-09-28",
@@ -851,7 +851,7 @@
    "amount": 8.64,
    "category": "Income",
    "method": "llm",
-   "detail": "confidence 0.95"
+   "detail": "confidence 0.97"
   }
  ]
 }

@@ -249,7 +249,7 @@
    "amount": -84.54,
    "category": "Shopping",
    "method": "llm",
-   "detail": "confidence 0.80"
+   "detail": "confidence 0.85"
   },
   {
    "date": "2026-08-04",
@@ -375,7 +375,7 @@
    "amount": -134.11,
    "category": "Shopping",
    "method": "llm",
-   "detail": "confidence 0.85"
+   "detail": "confidence 0.90"
   },
   {
    "date": "2026-08-09",
@@ -492,7 +492,7 @@
    "amount": -19.58,
    "category": "Transport",
    "method": "llm",
-   "detail": "confidence 0.90"
+   "detail": "confidence 0.93"
   },
   {
    "date": "2026-08-13",
@@ -510,7 +510,7 @@
    "amount": -16.31,
    "category": "Transport",
    "method": "llm",
-   "detail": "confidence 0.90"
+   "detail": "confidence 0.93"
   },
   {
    "date": "2026-08-14",
@@ -618,7 +618,7 @@
    "amount": -18.95,
    "category": "Restaurants & Delivery",
    "method": "llm",
-   "detail": "confidence 0.90"
+   "detail": "confidence 0.93"
   },
   {
    "date": "2026-08-20",
@@ -636,7 +636,7 @@
    "amount": -21.77,
    "category": "Restaurants & Delivery",
    "method": "llm",
-   "detail": "confidence 0.90"
+   "detail": "confidence 0.93"
   },
   {
    "date": "2026-08-21",
@@ -645,7 +645,7 @@
    "amount": -14.9,
    "category": "Restaurants & Delivery",
    "method": "llm",
-   "detail": "confidence 0.90"
+   "detail": "confidence 0.93"
   },
   {
    "date": "2026-08-21",
@@ -699,7 +699,7 @@
    "amount": -207.1,
    "category": "Health",
    "method": "llm",
-   "detail": "confidence 0.92"
+   "detail": "confidence 0.95"
   },
   {
    "date": "2026-08-23",
@@ -870,7 +870,7 @@
    "amount": 11.12,
    "category": "Income",
    "method": "llm",
-   "detail": "confidence 0.95"
+   "detail": "confidence 0.97"
   },
   {
    "date": "2026-08-31",
@@ -879,7 +879,7 @@
    "amount": -52.03,
    "category": "Other",
    "method": "llm",
-   "detail": "confidence 0.85"
+   "detail": "confidence 0.80"
   },
   {
    "date": "2026-08-31",

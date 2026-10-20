@@ -1,0 +1,76 @@
+{
+ "task": "classify",
+ "model": "claude-haiku-5-5",
+ "recorded_at": "2026-10-20T02:54:05+00:00",
+ "request": {
+  "system": "You classify lines of a Brazilian personal checking-account statement into spending categories.\nEach line has: index, direction ('in' = money received, 'out' = money spent), history (the bank's transaction type, in Portuguese: COMPRA NO DEBITO = debit-card purchase, PIX ENVIADO / PIX RECEBIDO = instant transfer sent / received, PAGAMENTO EFETUADO = bill paid, DEBITO AUTOMATICO = direct debit, TARIFA = bank fee, JUROS = interest charged) and description (merchant or counterpart, uppercase, accents removed; may carry a payment-processor prefix such as 'PAG*'). A description written <PERSON> is a private individual's name, removed for privacy.\n\nCategories (use exactly one of these names):\n- Groceries: supermarkets, bakeries, produce markets, butchers, wholesale clubs: food and supplies for home\n- Restaurants & Delivery: restaurants, cafes, snack bars, bars and food-delivery apps\n- Transport: ride-hailing, public transit, fuel, parking, tolls, tyre and car repair\n- Housing: rent, condominium fee, home repairs, locksmith, electrician, building materials\n- Utilities: electricity, water, gas, internet and phone bills\n- Subscriptions: recurring digital services billed monthly: streaming, music, cloud storage, apps\n- Health: pharmacies, doctors, dentists, labs, opticians, gyms, health insurance\n- Education: schools, courses, tuition, study books and school supplies\n- Shopping: retail goods: clothes, shoes, electronics, appliances, gifts, flowers, pets, games, marketplaces\n- Travel: flights, hotels, inns, intercity buses and other costs of trips away from home\n- Income: salary, payments and reimbursements received, sales, interest and cashback received\n- Fees & Taxes: bank fees, interest charged, IOF, vehicle and property taxes, notary and government fees\n- Other: transfers to people with no stated purpose, donations, anything that fits no other category\n\nFor every line return:\n- index: the line's index, each index exactly once;\n- category: one name from the list;\n- confidence: 0 to 1, how likely your category is right. Use less than 0.8 when the description could fit two categories, when it is only a person's name, or when you are guessing from a generic word;\n- reason: at most 8 words;\n- suggested_keyword: the merchant core of the description, copied exactly from it (uppercase, no accents), at least 3 characters, without processor prefixes, dates or reference numbers. It will become a substring rule for future months, so it must identify this merchant and not others. For <PERSON> lines write <PERSON>.\n",
+  "prompt": "Classify these 9 statement lines (index | direction | history | description):\n0 | out | PAGAMENTO EFETUADO | CARTORIO 2 OFICIO DE NOTAS\n1 | out | PIX ENVIADO | CLINICA ODONTO SORRISO\n2 | out | COMPRA NO DEBITO | CURSO ONLINE APRENDA MAIS\n3 | out | PIX ENVIADO | INSTITUTO ESPERANCA DOACAO\n4 | out | COMPRA NO DEBITO | MAGAZINE ELETRO LAR\n5 | in | PIX RECEBIDO | <PERSON>\n6 | out | COMPRA NO DEBITO | MATERIAL DE CONSTRUCAO TIJOLAO\n7 | out | COMPRA NO DEBITO | PAG*GAMEPLAY STORE\n8 | out | COMPRA NO DEBITO | PEDAGIO RODOVIA DAS FLORES"
+ },
+ "answer": {
+  "items": [
+   {
+    "index": 0,
+    "category": "Fees & Taxes",
+    "confidence": 0.85,
+    "reason": "Notary office fee, government-related charge",
+    "suggested_keyword": "CARTORIO 2 OFICIO DE NOTAS"
+   },
+   {
+    "index": 1,
+    "category": "Health",
+    "confidence": 0.95,
+    "reason": "Dental clinic payment",
+    "suggested_keyword": "CLINICA ODONTO SORRISO"
+   },
+   {
+    "index": 2,
+    "category": "Education",
+    "confidence": 0.9,
+    "reason": "Online course purchase",
+    "suggested_keyword": "CURSO ONLINE APRENDA MAIS"
+   },
+   {
+    "index": 3,
+    "category": "Other",
+    "confidence": 0.8,
+    "reason": "Donation to institute",
+    "suggested_keyword": "INSTITUTO ESPERANCA DOACAO"
+   },
+   {
+    "index": 4,
+    "category": "Shopping",
+    "confidence": 0.9,
+    "reason": "Electronics and appliances retailer",
+    "suggested_keyword": "MAGAZINE ELETRO LAR"
+   },
+   {
+    "index": 5,
+    "category": "Other",
+    "confidence": 0.4,
+    "reason": "Only a person's name, purpose unknown",
+    "suggested_keyword": "<PERSON>"
+   },
+   {
+    "index": 6,
+    "category": "Housing",
+    "confidence": 0.9,
+    "reason": "Building materials store",
+    "suggested_keyword": "MATERIAL DE CONSTRUCAO TIJOLAO"
+   },
+   {
+    "index": 7,
+    "category": "Shopping",
+    "confidence": 0.85,
+    "reason": "Game store via payment processor",
+    "suggested_keyword": "GAMEPLAY STORE"
+   },
+   {
+    "index": 8,
+    "category": "Transport",
+    "confidence": 0.95,
+    "reason": "Highway toll",
+    "suggested_keyword": "PEDAGIO RODOVIA DAS FLORES"
+   }
+  ]
+ }
+}

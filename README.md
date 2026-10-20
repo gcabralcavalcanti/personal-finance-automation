@@ -50,7 +50,7 @@ Tests: `python -m pytest -q`. Day-to-day use and what to do when something break
    not spending.
 4. **Apply the rules** in `data/rules.csv`: a word in the description gives the category (the longest match wins;
    a rule can also depend on whether money came in or went out, or on the amount).
-5. **Ask Claude about the rest**: only shops it has not seen before, 20 at a time. It answers with a category, how
+5. **Ask Claude about the rest**: only shops it has not seen before, 20 at a time, with people's names removed. It answers with a category, how
    sure it is, and a short keyword for a future rule. The code checks the answer before using it.
 6. **A person confirms the doubtful ones.** Sure answers are used; the others wait in a review list. A confirmed
    answer is saved as a new rule, so next month that shop costs nothing.
@@ -100,8 +100,25 @@ and run the tests.
 - One CSV layout out of the box (see above); no credit-card PDF import.
 - Rules match words inside the description, so a very short keyword could catch the wrong shop; the review refuses
   keywords under 3 letters.
+- The AI's confidence is not a guarantee. In the test, its one wrong answer (an online video course filed as
+  Subscriptions instead of Education) came with confidence 0.85, above the 0.8 limit, so it would have been used
+  without review. The evaluation (`output/eval.md`, and page 2 of the report) lists every case like this.
 - A transfer to a person has no category the AI can know; those always go to review.
 - The 31 test answers show the method works; they are not a benchmark.
+
+## Privacy & LGPD
+
+- **What goes to the API**, only for shops the rules do not know: the description, the bank's transaction type
+  (for example "PIX ENVIADO") and whether money came in or out.
+- **Names of private individuals never go.** In transfers, a description that looks like a person's name is replaced
+  by `<PERSON>` before the request (`finance_automation/privacy.py`). Under Brazil's data protection law (LGPD) a
+  name is personal data, so it is removed rather than shared. The check errs on the safe side: a one-person business
+  shown only by a plain name is masked too. `tests/test_privacy.py` checks that no name reaches the request or the
+  saved answers.
+- **Never sent:** amounts, dates, balances, account numbers, the statement file or the database.
+- **Stays on your computer:** the database (`data/ledger.sqlite`) and the call logs (`output/logs/`), both left out of
+  git.
+- **In this repository:** synthetic data only.
 
 ## How AI was used
 
