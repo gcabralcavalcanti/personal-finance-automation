@@ -50,7 +50,7 @@ def _method_share(month: dict) -> dict[str, int]:
 
 
 def write(path: Path, months: list[dict], ev: dict, reimport: dict | None = None, png: Path | None = None) -> Path:
-    with PdfPages(path) as pdf:
+    with PdfPages(path, metadata={"CreationDate": None}) as pdf:  # no timestamp: same input, same file
         fig = plt.figure(figsize=A4)
         fig.text(0.05, 0.95, "Personal finance automation - report", fontsize=16, weight="bold", color=BLUE, va="top")
         fig.text(
