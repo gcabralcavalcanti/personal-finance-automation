@@ -195,7 +195,7 @@ def to_markdown(d: dict) -> str:
     return "\n".join(L) + "\n"
 
 
-def write(ledger: Ledger, month: str, out_dir: Path = config.REPORTS, as_json: bool = True) -> Path:
+def write(ledger: Ledger, month: str, out_dir: Path = config.OUTPUT, as_json: bool = True) -> Path:
     d = build(ledger, month)
     out_dir.mkdir(parents=True, exist_ok=True)
     md = out_dir / f"{month}.md"

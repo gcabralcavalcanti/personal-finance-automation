@@ -1,6 +1,6 @@
 # Eval: LLM classifier on the golden set
 
-The golden set holds every description in the synthetic statements that the seed rules do not catch, with the expected category (`golden/labels.csv`).
+The golden set holds every description in the synthetic statements that the seed rules do not catch, with the expected category (`tests/golden/labels.csv`).
 
 ```
 Golden set: 31 descriptions, answered 31

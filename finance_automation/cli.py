@@ -4,8 +4,8 @@
   import FILE [FILE ...]            parse, reconcile, dedup into the ledger, classify (rules, then LLM)
   classify                          re-run classification over the whole ledger
   review [--approve ID [--category X]] [--approve-all-suggested]
-  report --month YYYY-MM            write reports/<month>.md and .json
-  eval                              score the LLM classifier on golden/labels.csv
+  report --month YYYY-MM            write output/<month>.md and .json
+  eval                              score the LLM classifier on tests/golden/labels.csv
   demo [--live]                     generate -> import 3 months -> re-import month 1 -> approve -> report -> eval
 
 LLM mode: --demo replays recorded answers only (no API call); --live requires a key; default 'auto'
@@ -103,9 +103,9 @@ def run_demo(args) -> int:
         ledger.close()
         print("6. eval on the golden set")
         res = evaluate.run(llm)
-        (config.REPORTS / "eval.md").write_text(evaluate.to_markdown(res), encoding="utf-8")
+        (config.OUTPUT / "eval.md").write_text(evaluate.to_markdown(res), encoding="utf-8")
         print(evaluate.to_text(res))
-        final_report.write(config.FINAL_REPORT, months, res, reimport, config.REPORTS / "overview.png")
+        final_report.write(config.FINAL_REPORT, months, res, reimport, config.DOCS / "overview.png")
         print(f"7. {config.FINAL_REPORT.name}")
     finally:
         _summary(llm)

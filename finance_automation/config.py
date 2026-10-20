@@ -8,11 +8,12 @@ DATA = ROOT / "data"
 STATEMENTS = DATA / "statements"  # synthetic monthly bank statements (versioned)
 RULES = DATA / "rules.csv"  # keyword rules; review appends learned rules here (versioned)
 LEDGER = DATA / "ledger.sqlite"  # local ledger (not versioned)
-GOLDEN = ROOT / "golden"  # expected categories for the rows the rules do not catch
-RECORDINGS = ROOT / "recordings"  # recorded LLM answers: response cache + demo mode (versioned)
+GOLDEN = ROOT / "tests" / "golden"  # expected categories for the rows the rules do not catch
+RECORDINGS = DATA / "recorded"  # recorded LLM answers: response cache + demo mode (versioned)
 FINAL_REPORT = ROOT / "final-report.pdf"
-REPORTS = ROOT / "reports"  # generated reports (versioned, so the repo shows real output)
-LOGS = ROOT / "logs"  # one JSON line per LLM call (not versioned)
+OUTPUT = ROOT / "output"  # generated monthly reports and eval (versioned, so the repo shows real output)
+DOCS = ROOT / "docs"
+LOGS = OUTPUT / "logs"  # one JSON line per LLM call (not versioned)
 
 # Fixed category list. The one-line definitions go into the system prompt.
 CATEGORIES = {

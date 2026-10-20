@@ -270,7 +270,7 @@ def write_all(root: Path = config.ROOT, seed: int = SEED) -> dict:
                 assert m[1] == e.category, (d, m[1], e.category)  # the seed rules are right by construction
                 continue
             golden.setdefault(d, (h, "in" if e.amount > 0 else "out", e.category))
-    gdir = root / "golden"
+    gdir = root / "tests" / "golden"
     gdir.mkdir(parents=True, exist_ok=True)
     with open(gdir / "labels.csv", "w", encoding="utf-8", newline="") as f:
         w = csv.writer(f, lineterminator="\n")

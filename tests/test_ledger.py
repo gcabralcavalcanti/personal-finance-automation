@@ -33,3 +33,20 @@ def test_same_day_same_amount_kept_when_balance_differs(ledger):
     rows = [("05/08/2026", "Compra no débito", "PADARIA", -8.5)] * 2
     res = ledger.add_statement(parse_text(statement_csv(rows)))
     assert res["new_rows"] == 2
+
+
+def test_ledger_file_persists_and_feeds_the_report(tmp_path):
+    from finance_automation.ledger import Ledger
+    from finance_automation.report import build
+
+    path = tmp_path / "ledger.sqlite"
+    st = parse_text(statement_csv(DAYS), "a.csv")
+    first = Ledger(path)
+    first.add_statement(st)
+    before = build(first, "2026-08")
+    first.close()
+    again = Ledger(path)  # a new process opening the same file
+    assert again.add_statement(st)["new_rows"] == 0
+    after = build(again, "2026-08")
+    assert after["rows"] == before["rows"] == 15 and after["expenses"] == before["expenses"]
+    again.close()

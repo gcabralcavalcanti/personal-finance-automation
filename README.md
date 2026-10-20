@@ -1,24 +1,32 @@
 # personal-finance-automation
 
-Turns a Brazilian bank-statement CSV into a categorized ledger and a monthly report: keyword rules first, Claude
-for the rest with a confidence score, a person for the doubtful cases, and every approval becomes a new rule.
+Reads the monthly bank statement, puts every transaction in a category (groceries, rent, transport...) and writes a
+monthly report. Fixed rules handle the usual shops, Claude handles the rest, and anything uncertain waits for a
+person.
 
 ![Synthetic data — no private records](https://img.shields.io/badge/data-synthetic%20%E2%80%94%20no%20private%20records-e07b39)
 ![Built with AI assistance](https://img.shields.io/badge/built%20with-AI%20assistance-6f42c1)
 
+## Why it matters
+
+Sorting a statement by hand every month is slow, and sending every line to an AI model costs money each month and
+can be wrong without anyone noticing. Here the AI only sees what the rules do not know yet, says how sure it is,
+and every answer a person confirms becomes a new rule. Each month there is less to ask, and nothing uncertain is
+counted without a check.
+
 ## Results
 
-On three synthetic monthly statements (`reports/`, full report in [`final-report.pdf`](final-report.pdf)):
+On three made-up monthly statements (full report: [`final-report.pdf`](final-report.pdf)):
 
-| Result | Value |
+| | |
 |---|---|
-| Rows classified by the seed rules | 69.5% of 223 |
-| Descriptions sent to the LLM | 13 in month 1, 9 in months 2 and 3 |
-| LLM accuracy on the golden set | 30 / 31 (96.8%); 27 of the 28 applied automatically were right |
-| Importing a month twice | 0 new rows, 75 duplicates skipped |
-| API cost of the recorded answers | about USD 0.003 (5 calls) |
+| Transactions sorted by the fixed rules | 7 in 10 |
+| Shops the AI had to look at | 13 in the first month, 9 in each of the next two |
+| AI answers that were right, on 31 shops with known answers | 30 |
+| New rows when the same statement is loaded twice | 0 |
+| Cost of all the AI answers used in the demo | less than one US cent |
 
-![Report overview](reports/overview.png)
+![Report overview](docs/overview.png)
 
 ## Run it
 
@@ -27,59 +35,77 @@ pip install -r requirements.txt
 python demo.py
 ```
 
-No API key needed: the demo replays the recorded answers. It generates the data, imports three months, imports
-month 1 again (0 new rows), approves the review suggestions that have a concrete category (an "Other" guess waits
-for a person), writes `reports/2026-0X.md` and `.json`, runs the eval (`reports/eval.md`) and writes
-`final-report.pdf`. Tests: `python -m pytest -q`, offline.
+Runs without an API key, replaying recorded answers. Set `ANTHROPIC_API_KEY` to call Claude live.
 
-Single steps: `python -m finance_automation import <csv>`, `review [--approve ID --category X]`,
-`report --month 2026-08`, `eval`. To call the API live, set `ANTHROPIC_API_KEY` (see `.env.example`) and run
-`python demo.py --live`.
+The demo creates the statements, loads three months, loads the first month again (nothing is added), confirms the
+AI suggestions it can, and writes the monthly reports to `output/` and the summary to `final-report.pdf`.
+Tests: `python -m pytest -q`. Day-to-day use and what to do when something breaks: [`RUNBOOK.md`](RUNBOOK.md).
 
 ## How it works
 
-1. **Parse and check.** Brazilian number format, UTF-8 or latin-1, header lines before the table. Every row's
-   balance must equal the previous balance plus the amount, and the header balance must match the closing one.
-2. **Deduplicate.** The natural key (date, history, description, amount, balance) is unique in a SQLite ledger,
-   so importing the same file twice, or two statements whose periods overlap, never duplicates a row.
-3. **Skip internal movements.** Transfers to the holder's own accounts, investments, card bill payments, cash
-   withdrawals.
-4. **Keyword rules** (`data/rules.csv`). Substring match on the normalized description, longest keyword first,
-   with an optional origin filter (money in or out) and an optional value condition (amount range, round or
-   non-round cents) that switches the category.
-5. **LLM for the rest.** Only unique descriptions no rule matches, 20 per call, JSON Schema output: category from
-   a fixed list, confidence, reason and a suggested keyword. Checked locally (each item once, category in the list,
-   keyword inside the description), retried once with the complaints. Confidence of 0.8 or more is applied; the
-   rest goes to review.
-6. **Review becomes a rule.** An approved item is appended to `rules.csv` (after checking the keyword), and the
-   ledger is reclassified. Next month that merchant costs no API call.
-
-Cost controls: `claude-haiku-5-5`, thinking off, output budget sized per batch, at most 10 calls per run, every
-accepted answer recorded in `recordings/` (never paid twice), one JSON log line per call with tokens and cost.
+1. **Read the statement** and check that every balance adds up, line by line.
+2. **Store it** in a small database file (`data/ledger.sqlite`, SQLite) that keeps every transaction once, so
+   loading the same file twice, or two statements that overlap, adds nothing. The reports read from this file.
+3. **Skip money moved between your own accounts**, investments, card bill payments and cash withdrawals: they are
+   not spending.
+4. **Apply the rules** in `data/rules.csv`: a word in the description gives the category (the longest match wins;
+   a rule can also depend on whether money came in or went out, or on the amount).
+5. **Ask Claude about the rest**: only shops it has not seen before, 20 at a time. It answers with a category, how
+   sure it is, and a short keyword for a future rule. The code checks the answer before using it.
+6. **A person confirms the doubtful ones.** Sure answers are used; the others wait in a review list. A confirmed
+   answer is saved as a new rule, so next month that shop costs nothing.
 
 ## Data
 
-All data is synthetic, generated by `generate_data.py`: three months of statements with invented merchants,
-the seed rules and the golden labels (`golden/labels.csv`, the 31 descriptions the seed rules miss). No real
-statement, balance or merchant list is used.
+All data is synthetic, generated by `generate_data.py`: three statements with invented shops and amounts, the
+starting rules, and a test list of 31 shop names with the right category (`tests/golden/labels.csv`). No real
+statement, balance or shop list is used.
 
-This is a public rewrite of a tool I use every month. The original also has an Excel/VBA front end (buttons to
-consolidate the month, category dropdowns that override a row and write the choice back, undo, a dashboard sheet)
-and imports credit-card bills from PDF; neither is included. The rules format and the deduplication key come from
-that tool; the code, merchants and data here are new.
+This is a public rewrite of a tool I use every month. The original also has an Excel front end with buttons and
+reads credit-card bills from PDF; neither is included here.
+
+### Statement format
+
+A CSV file as exported by many Brazilian banks: columns separated by `;`, numbers written `1.234,56`, dates
+`dd/mm/yyyy`, a few free lines before the table, then this header and one line per transaction:
+
+```
+Extrato Conta Corrente
+Período ;01/08/2026 a 31/08/2026
+Saldo ;4.512,33
+
+Data Lançamento;Histórico;Descrição;Valor;Saldo
+31/08/2026;Pix enviado;PADARIA PAO DOURADO;-12,50;4.512,33
+```
+
+`Valor` is negative for money going out. `Saldo` (the balance after each line) is optional but lets the program
+check the file. The text can be UTF-8 or Latin-1.
+
+### Using another bank
+
+If your bank exports something different, change only `finance_automation/statement.py`:
+
+- a different header: change `HEADER` (the pattern that finds the first line of the table);
+- different column order or names: change the column numbers read in `parse_text` (date, history, description,
+  amount, balance);
+- a comma separator or `1,234.56` numbers: change the `split(";")` call and `parse_brl` in `text.py`;
+- no balance column: leave it empty; the balance check is then skipped.
+
+Everything after that step (database, rules, AI, reports) stays the same. Add one small example file to `tests/`
+and run the tests.
 
 ## Limits
 
-- Only the CSV layout in `statement.py`; no credit-card PDF import here.
-- Rules are substring matches: a short learned keyword could catch unrelated rows, so review keeps the full
-  merchant core and refuses keywords under 3 characters.
-- A person-name transfer has no category the model can know: those go to review, as they should.
-- The eval runs on 31 descriptions written for this repository; it shows the loop works, it is not a benchmark.
+- One CSV layout out of the box (see above); no credit-card PDF import.
+- Rules match words inside the description, so a very short keyword could catch the wrong shop; the review refuses
+  keywords under 3 letters.
+- A transfer to a person has no category the AI can know; those always go to review.
+- The 31 test answers show the method works; they are not a benchmark.
 
 ## How AI was used
 
 I use Claude (Claude Code and the API) for coding, review and documentation. The questions, modelling choices,
-validation and conclusions are mine. In the product, `claude-haiku-5-5` classifies the descriptions the rules miss,
-in batches, with structured output and a call cap, and every accepted answer is recorded.
+validation and conclusions are mine. In the product, the smallest Claude model sorts the shops the rules miss, with
+a cap on calls per run; every answer is saved, so the same question is never paid twice.
 
 MIT License.

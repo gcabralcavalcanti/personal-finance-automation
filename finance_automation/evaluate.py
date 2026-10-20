@@ -75,7 +75,7 @@ def to_markdown(res: dict) -> str:
         "",
         (
             "The golden set holds every description in the synthetic statements that the seed rules do not catch, "
-            "with the expected category (`golden/labels.csv`)."
+            "with the expected category (`tests/golden/labels.csv`)."
         ),
         "",
         "```",
