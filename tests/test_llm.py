@@ -121,3 +121,23 @@ def test_truncated_answer_is_retried_with_a_larger_budget(tmp_path):
     msgs.create = create
     assert m.ask("t", "sys", "p", SCHEMA, max_tokens=600) == {"x": 1}
     assert [c["max_tokens"] for c in msgs.calls] == [600, 900]
+
+
+def test_empty_key_means_demo_without_fallback(monkeypatch, tmp_path):
+    """ANTHROPIC_API_KEY set but empty: no .env, no Windows registry, demo mode."""
+    import sys
+    import types
+
+    from finance_automation import config, llm
+
+    fake = types.SimpleNamespace(
+        HKEY_CURRENT_USER=0, OpenKey=lambda *a: (_ for _ in ()).throw(AssertionError("registry read"))
+    )
+    monkeypatch.setitem(sys.modules, "winreg", fake)
+    (tmp_path / ".env").write_text("ANTHROPIC_API_KEY=sk-from-dotenv", encoding="utf-8")
+    monkeypatch.setattr(config, "ROOT", tmp_path)
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "")
+    assert llm._load_key() is None
+    assert llm.LLM(mode="auto", recordings=tmp_path / "rec", log_dir=tmp_path / "logs").mode == "demo"
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-test")
+    assert llm._load_key() == "sk-test"
