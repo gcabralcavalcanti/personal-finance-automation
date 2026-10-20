@@ -19,12 +19,8 @@ handles the rest, and anything uncertain waits for me.
 
 ## How I use it
 
-My real system is an Excel workbook with a VBA engine and small Python import scripts, not this code. Once a month I
-download the bank statement and the credit-card bill, run the import, check the totals and press the consolidate
-buttons; shops the rules do not know show up in a list and I pick their category by hand, adding a rule when the shop
-repeats. Every week, and again at the end of the month, I close the cash flow from that workbook. This repository
-rebuilds the same monthly cycle in Python and adds one thing my workbook does not have: the AI suggestion, with how
-sure it is, for the shops I used to sort by hand. Nothing runs on a schedule; I start each step.
+My own system is an Excel workbook with a VBA engine and no AI; this public version in Python adds the AI step.
+Details: [How I use it](docs/how-it-works.md#how-i-use-it).
 
 ## Run it
 
