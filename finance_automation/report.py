@@ -199,7 +199,9 @@ def write(ledger: Ledger, month: str, out_dir: Path = config.OUTPUT, as_json: bo
     d = build(ledger, month)
     out_dir.mkdir(parents=True, exist_ok=True)
     md = out_dir / f"{month}.md"
-    md.write_text(to_markdown(d), encoding="utf-8")
+    md.write_text(to_markdown(d), encoding="utf-8", newline="\n")
     if as_json:
-        (out_dir / f"{month}.json").write_text(json.dumps(d, ensure_ascii=False, indent=1), encoding="utf-8")
+        (out_dir / f"{month}.json").write_text(
+            json.dumps(d, ensure_ascii=False, indent=1), encoding="utf-8", newline="\n"
+        )
     return md

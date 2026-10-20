@@ -103,7 +103,7 @@ def run_demo(args) -> int:
         ledger.close()
         print("6. eval on the golden set")
         res = evaluate.run(llm)
-        (config.OUTPUT / "eval.md").write_text(evaluate.to_markdown(res), encoding="utf-8")
+        (config.OUTPUT / "eval.md").write_text(evaluate.to_markdown(res), encoding="utf-8", newline="\n")
         print(evaluate.to_text(res))
         final_report.write(config.FINAL_REPORT, months, res, reimport, config.DOCS / "overview.png")
         print(f"7. {config.FINAL_REPORT.name}")
