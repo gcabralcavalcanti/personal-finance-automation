@@ -1,5 +1,7 @@
 # personal-finance-automation
 
+**[See it working](https://gcabralcavalcanti.github.io/personal-finance-automation/)** · [Final report, 2 pages (PDF)](final-report.pdf)
+
 Public version, in Python, of the system I use for my own finances: it reads the monthly bank statement, puts every
 transaction in a category and writes a monthly report. Fixed rules handle the usual shops; in this version Claude
 handles the rest, and anything uncertain waits for me.

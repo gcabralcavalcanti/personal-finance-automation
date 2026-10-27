@@ -2,7 +2,11 @@
 
 import sys
 
+from finance_automation import page
 from finance_automation.cli import main
 
 if __name__ == "__main__":
-    sys.exit(main(["demo", *sys.argv[1:]]))
+    code = main(["demo", *sys.argv[1:]])
+    if not code:
+        print(f"One page with everything: {page.build().relative_to(page.ROOT)}")
+    sys.exit(code)

@@ -1,0 +1,43 @@
+# Builds output/index.html (one page with the results of the recorded run, no API key) and publishes it on GitHub Pages.
+# Turn it on once: Settings > Pages > Source = GitHub Actions. Then every push to main updates the page.
+name: pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: The page (standard library only, nothing is downloaded or called)
+        run: python -m finance_automation.page
+      - name: Collect the page
+        run: mkdir site && cp output/index.html site/
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
