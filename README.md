@@ -6,6 +6,9 @@ Public version, in Python, of the system I use for my own finances: it reads the
 transaction in a category and writes a monthly report. Fixed rules handle the usual shops; in this version Claude
 handles the rest, and anything uncertain waits for me.
 
+**Result:** on 31 test transactions that the rules do not catch, the AI picked the right category for 30
+([test results](output/eval.md)).
+
 ![Synthetic data — no private records](https://img.shields.io/badge/data-synthetic%20%E2%80%94%20no%20private%20records-e07b39)
 ![Built with AI assistance](https://img.shields.io/badge/built%20with-AI%20assistance-6f42c1)
 
